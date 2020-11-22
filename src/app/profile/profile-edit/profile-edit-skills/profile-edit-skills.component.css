@@ -1,0 +1,7 @@
+.delete-skill{
+    width: 20px;
+}
+::ng-deep.dropdown-menu{
+    max-height: 250px;
+    overflow-x: hidden;
+}

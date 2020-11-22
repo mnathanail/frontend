@@ -1,0 +1,48 @@
+<ng-template #content let-c="close">
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title"> {{title}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onClose()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="editEducationForm">
+            <div class="form-group">
+                <label for="editEducationTitle">Title</label>
+                <input type="text" class="form-control" id="editEducationTitle" formControlName="title" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <label for="editEducationDegree">Degree</label>
+                <input type="text" class="form-control" id="editEducationDegree" formControlName="degree" placeholder="Degree">
+            </div>
+            <div class="form-group">
+                <label for="editEducationSchool">School</label>
+                <input type="text" class="form-control" id="editEducationSchool" formControlName="school" placeholder="School">
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="editEducationStartYear">Start Year</label>
+                        <select class="form-control" id="editEducationStartYear" formControlName="startYear">
+                            <option *ngFor="let year of years;">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="editEducationEndYear">End Year</label>
+                        <select class="form-control" id="editEducationEndYear" formControlName="endYear">
+                            <option *ngFor="let year of years;">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" (click)="c('Save click')">Save</button>
+        <button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button>
+    </div>
+</ng-template>
+
+

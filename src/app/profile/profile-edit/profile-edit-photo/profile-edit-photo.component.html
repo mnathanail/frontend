@@ -1,0 +1,32 @@
+<ng-template #content>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Hi photo!</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onClose()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="photoProfileGroup">
+            <div class="form-group">
+                <label for="exampleFormControlFile1">Example file input</label>
+                <input type="file"
+                       class="form-control-file"
+                       (change)="onFileChange($event)"
+                       id="exampleFormControlFile1"
+                       formControlName="photoProfile">
+            </div>
+        </form>
+    </div>
+
+    <div *ngIf="preview">
+        <img [src]="result" alt="">
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-success" [disabled]="!preview" (click)="onSave($event)">Save</button>
+        <button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button>
+    </div>
+</ng-template>
+
+<!-- (load)="open(content)" *ngIf="showConfirm==='close'"-->
+<app-confirm *ngIf="showConfirm==='open'"></app-confirm>

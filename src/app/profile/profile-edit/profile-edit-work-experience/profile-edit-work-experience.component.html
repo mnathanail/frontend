@@ -1,0 +1,89 @@
+<ng-template #content let-c="close">
+    <form [formGroup]="editExperienceForm" (submit)="onSubmit()">
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title"> {{title}}</h4>
+            <button type="button" class="close" aria-label="Close" (click)="onClose()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+            <div class="form-group">
+                <label for="editExperienceJobTitle">Job Title</label>
+                <input type="text" class="form-control" id="editExperienceJobTitle" formControlName="jobTitle"
+                       placeholder="Job Title">
+            </div>
+            <div class="form-group">
+                <label for="editExperienceCompanyName">Company Name</label>
+                <input type="text" class="form-control" id="editExperienceCompanyName" formControlName="companyName"
+                       placeholder="Company Name">
+            </div>
+            <div class="form-group">
+                <label for="editExperienceIndustry">Industry</label>
+                <input type="text" class="form-control" id="editExperienceIndustry" formControlName="industry"
+                       placeholder="Industry">
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="editCurrent" formControlName="isCurrent"
+                       (click)="isCurrentChecked()">
+                <label class="form-check-label" for="editCurrent">Still working here!</label>
+            </div>
+            <div class="row" formGroupName="period">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceStartYear">Start Year</label>
+                                <select class="form-control" id="editExperienceStartYear" formControlName="startYear">
+                                    <option *ngFor="let year of years;" value="{{year}}">{{year}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceStartMonth">Start Month</label>
+                                <select class="form-control" id="editExperienceStartMonth" formControlName="startMonth">
+                                    <option *ngFor="let month of months;"
+                                            value="{{month.value}}">{{month.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6" *ngIf="!this.toggleChecked">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceEndYear">End Year</label>
+                                <select class="form-control" id="editExperienceEndYear" formControlName="endYear">
+                                    <option *ngFor="let year of years;" value="{{year}}">{{year}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceEndMonth">End Month</label>
+                                <select class="form-control" id="editExperienceEndMonth" formControlName="endMonth">
+                                    <option *ngFor="let month of months;"
+                                            value="{{month.value}}">{{month.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="editExperienceDescription">Description</label>
+                <textarea class="form-control" formControlName="description" id="editExperienceDescription"
+                          rows="5"></textarea>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-success">Takis</button>
+            <button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button>
+        </div>
+    </form>
+</ng-template>
+
+
