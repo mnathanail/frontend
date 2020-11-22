@@ -1,0 +1,9 @@
+.edit-education{
+}
+
+.edit-education:hover{
+    border: 2px solid red;
+    color: red;
+    border-radius: 50%;
+}
+
