@@ -2,9 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {SummaryModel} from './summary-model';
-import {SummaryMessagesService} from '../service/summary/summary-messages.service';
-import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 import {SummaryService} from '../service/summary/summary.service';
 
 @Component({
@@ -33,7 +31,12 @@ export class ProfileSummaryComponent implements OnInit, OnDestroy {
     }
 
     onAddOrEditSummary(): void {
-        this.router.navigate(['edit/edit-intro-profile'], {relativeTo: this.route})
+        this.router.navigate(['edit/edit-intro-profile'], {relativeTo: this.route});
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+        this.summaryService.getMessages().setSummaryChangedComplete();
     }
 
     private _getSummary(id: string): void {
@@ -47,14 +50,9 @@ export class ProfileSummaryComponent implements OnInit, OnDestroy {
                 this.summaryService.getMessages().setSummaryChangedError(error);
             },
             () => {
-                //this.profileService.setSummaryChangedComplete();
+                console.log('completed!'); // this.profileService.setSummaryChangedComplete();
             }
         );
-    }
-
-    ngOnDestroy(): void {
-        this.subscription.unsubscribe();
-        this.summaryService.getMessages().setSummaryChangedComplete();
     }
 
 }
