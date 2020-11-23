@@ -6,6 +6,7 @@ import {Directive, ElementRef, HostListener} from '@angular/core';
 // tslint:disable-next-line:directive-class-suffix
 export abstract class ProfileAbstractEdit {
 
+    private readonly expId: string;
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
                 protected router: Router,
@@ -43,6 +44,20 @@ export abstract class ProfileAbstractEdit {
     openModal(element: ElementRef): void {
         setTimeout(() => {
             this.modalService.open(element);
+        }, 500);
+    }
+
+    getExperienceId(): string{
+        return this.route.snapshot.params.expId;
+    }
+
+    getCandidateId(): string{
+        return this.route.snapshot.params.id;
+    }
+
+    delayedModalClose(): void{
+        setTimeout(() => {
+            this.onClose();
         }, 500);
     }
 }

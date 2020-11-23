@@ -40,7 +40,6 @@ export class ProfileSummaryComponent implements OnInit, OnDestroy {
     }
 
     private _getSummary(id: string): void {
-        id = '1';
         this.subscription = this.summaryService.getSummary(id).subscribe(
             (value) => {
                 this.data = value;

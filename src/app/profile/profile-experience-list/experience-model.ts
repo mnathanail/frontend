@@ -8,4 +8,5 @@ export interface ExperienceModel {
     isCurrent: boolean;
     period: PeriodModel;
     description: string;
+    experienceId: string;
 }

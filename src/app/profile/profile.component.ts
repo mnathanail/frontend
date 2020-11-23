@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 private route: ActivatedRoute,
                 private modalService: NgbModal,
                 private profileService: ProfileService,
-                private profileMessages: ProfileMessagesService, private domSanitizer: DomSanitizer) {
+                private profileMessages: ProfileMessagesService) {
     }
 
     ngOnInit(): void {

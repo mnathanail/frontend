@@ -24,11 +24,13 @@ export class ProfileExperienceItemComponent implements OnInit, OnDestroy {
     }
 
     onEditExperience(index: string): void {
+        console.log(index);
+        console.log(this.jobItem)
         this.experienceMessages.setExperienceChanged(this.jobItem);
         this.router.navigate(['edit/edit-experience-profile/' + index], {relativeTo: this.route});
     }
 
     ngOnDestroy(): void {
-        this.experienceMessages.setExperienceChangedComplete();
+        //this.experienceMessages.setExperienceChangedComplete();
     }
 }

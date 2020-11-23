@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    OnInit,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -8,6 +18,7 @@ import {LocationStrategy} from '@angular/common';
 import {ProfileMessagesService} from '../../service/profile/profile-messages.service';
 import {ProfileService} from '../../service/profile/profile.service';
 import {ProfileModel} from '../../profile-model';
+import {ProfileAbstractEdit} from '../profile-abstract-edit';
 
 @Component({
     selector: 'app-profile-edit-photo',
@@ -16,9 +27,9 @@ import {ProfileModel} from '../../profile-model';
     providers: [NgbModalConfig, NgbModal],
     encapsulation: ViewEncapsulation.None,
 })
-export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
 
-    @ViewChild('content') content: TemplateRef<any>;
+    @ViewChild('content') content: ElementRef;
 
     photoProfileGroup: FormGroup;
     showConfirm: string;
@@ -28,17 +39,17 @@ export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComp
     private result: string;
     private subscription: Subscription = new Subscription();
 
-    constructor(config: NgbModalConfig,
-                private modalService: NgbModal,
-                private router: Router,
-                private route: ActivatedRoute,
+    constructor(public config: NgbModalConfig,
+                public modalService: NgbModal,
+                public router: Router,
+                public route: ActivatedRoute,
                 // private platformLocation: PlatformLocation,
                 private platformLocation: LocationStrategy,
                 private profileService: ProfileService,
                 private profileMessages: ProfileMessagesService
     ) {
+        super(config, modalService, router, route);
 
-        config.keyboard = true;
         //platformLocation.onPopState(() => this.modalService.dismissAll());
     }
 
@@ -49,7 +60,7 @@ export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComp
     }
 
     ngAfterViewInit(): void {
-        this.modalService.open(this.content);
+        this.openModal(this.content);
     }
 
     onFileChange(e: any): void {
@@ -89,16 +100,14 @@ export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComp
     }
 
     onSave(event): void {
-
         this.subscription = this.profileService.setPhoto(this.result)
             .subscribe(
                 (value: ProfileModel) => {
                     this.profileMessages.setPhotoChanged(value.image);
-                    setTimeout(() => {
-                        this.onClose();
-                    }, 500);
+                    this.delayedModalClose();
                 },
                 error => {
+                    this.profileMessages.setPhotoChangedError(error);
                 },
                 () => {
                     console.log('completed!');
@@ -107,11 +116,7 @@ export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComp
     }
 
     onClose(): void {
-        this.route.parent.params.subscribe((param: Params) => {
-            const id = +param.id;
-            this.router.navigate([`profile/${param.id}`]);
-            this.modalService.dismissAll();
-        });
+       this.onClose();
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
@@ -127,10 +132,6 @@ export class ProfileEditPhotoComponent implements OnInit, AfterViewInit, CanComp
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
-    }
-
-    @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent): void {
-        this.onClose();
     }
 
     isFileImage(file): boolean {

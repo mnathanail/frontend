@@ -23,6 +23,7 @@ export class ProfileEditSummaryComponent extends ProfileAbstractEdit implements 
     subscription: Subscription;
     summary = '';
     loaded = false;
+    candidateId: string;
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -32,10 +33,11 @@ export class ProfileEditSummaryComponent extends ProfileAbstractEdit implements 
                 private summaryService: SummaryService
     ) {
         super(config, modalService, router, route);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
-        this.subscription = this.summaryService.getSummary('1').subscribe(
+        this.subscription = this.summaryService.getSummary(this.candidateId).subscribe(
             (value) => {
                 this.summary = value.summary;
                 this.loaded = true;
@@ -68,8 +70,7 @@ export class ProfileEditSummaryComponent extends ProfileAbstractEdit implements 
                     this.summaryService.getMessages().setSummaryChangedError(error);
                 },
                 () => {
-
-                    this.onClose();
+                    this.delayedModalClose();
                 }
             );
     }
