@@ -8,5 +8,6 @@ export class ExperienceImpl implements ExperienceModel{
     industry = '';
     isCurrent = false;
     jobTitle = '';
+    experienceId = '';
     period = new PeriodImpl();
 }

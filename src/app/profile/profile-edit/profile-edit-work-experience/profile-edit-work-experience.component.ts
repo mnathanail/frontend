@@ -1,18 +1,18 @@
-import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup} from '@angular/forms';
 import {monthNames} from '../../../shared/months';
 import {ExperienceMessagesService} from '../../service/experience/experience-messages.service';
-import {Subscription} from 'rxjs';
+import {pipe, Subscription} from 'rxjs';
 import {ExperienceModel} from '../../profile-experience-list/experience-model';
 import {ExperienceImpl} from '../../profile-experience-list/experience-impl';
 import {ExperienceService} from '../../service/experience/experience.service';
 import {ProfileAbstractEdit} from '../profile-abstract-edit';
 import {HttpClient} from '@angular/common/http';
-import {SkillsService} from '../../service/skills/skills.service';
 import {LoaderService} from '../../../shared/loader/service/loader.service';
 import {FormsMethods} from '../../../shared/forms/forms-methods';
+import {delay} from 'rxjs/operators';
 
 @Component({
     selector: 'app-profile-edit-work-experience',
@@ -27,7 +27,6 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     editState = false;
     editExperienceForm: FormGroup;
     toggleChecked = false;
-    expId: string;
     private title: string;
     private subscription = new Subscription();
 
@@ -36,19 +35,15 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 protected router: Router,
                 protected route: ActivatedRoute,
                 private http: HttpClient,
-                private skillService: SkillsService,
                 private loaderService: LoaderService,
                 private experienceService: ExperienceService,
                 private experienceMessages: ExperienceMessagesService
     ) {
         super(config, modalService, router, route);
         this.initializeForm(new ExperienceImpl());
-
     }
 
     ngOnInit(): void {
-
-        this.expId = this.route.snapshot.params.expId;
 
         this.editState = this.router.url.indexOf('edit') > 0;
 
@@ -96,21 +91,26 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     onSubmit(): void {
         if (this.editState) {
-            console.log(this.editExperienceForm.value);
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
-            console.log(a);
-
-            this.experienceService.patchExperience(a as ExperienceModel, this.expId)
+            const experienceId = this.editExperienceForm.get('experienceId').value;
+            this.experienceService.patchExperience(a as ExperienceModel, experienceId)
+                .pipe(delay(500))
                 .subscribe((value) => {
-                    console.log(value);
-                });
+                        console.log(value);
+                        this.experienceMessages.setExperienceChanged(value);
+                    },
+                    error => {
+                        this.experienceMessages.setExperienceChangedError(error);
+                    },
+                    () => {
+                        this.delayedModalClose();
+                    }
+            );
         } else {
             console.log('Add new Experience');
             console.log(this.editExperienceForm.value);
         }
     }
-
-
 
     private initializeForm(value: ExperienceModel): void {
         this.editExperienceForm = new FormGroup({
@@ -124,7 +124,8 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 endYear: new FormControl(value.period.toYear),
                 endMonth: new FormControl(value.period.toMonth)
             }),
-            isCurrent: new FormControl(value.isCurrent)
+            isCurrent: new FormControl(value.isCurrent),
+            experienceId: new FormControl(value.experienceId)
         });
     }
 }

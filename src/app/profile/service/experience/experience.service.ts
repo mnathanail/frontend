@@ -11,7 +11,7 @@ export class ExperienceService {
     }
 
     fetchExperienceList(): Observable<ExperienceModel[]> {
-        const url = Endpoints.EXPERIENCE_LIST_GET.replace(':id', '2');
+        const url = Endpoints.EXPERIENCE_LIST_GET.replace(':id', '1');
         return this.http.get<ExperienceModel[]>(url);
     }
 

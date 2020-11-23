@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {ExperienceModel} from '../../profile-experience-list/experience-model';
-import {PeriodModel} from '../../../shared/models/period-model';
+
 
 @Injectable({providedIn: 'root'})
 export class ExperienceMessagesService {
@@ -11,6 +11,7 @@ export class ExperienceMessagesService {
     {
         id: '',
         jobTitle: '',
+        experienceId: '',
         companyName: '',
         industry: '',
         isCurrent: false,
