@@ -1,6 +1,6 @@
 <a class="list-group-item list-group-item-action">
     <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">{{jobItem.jobTitle}}</h5>
+        <h5 class="mb-1">{{jobItem?.jobTitle}}</h5>
         <small class="edit-education" (click)="onEditExperience(index)">
             <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg">
@@ -12,9 +12,13 @@
             </svg>
         </small>
     </div>
-    <p class="mb-1">{{jobItem.companyName}}</p>
-    <small>{{jobItem.industry}}</small>
-    <p class="mb-1">{{jobItem.description}}</p>
-    <p class="mb-1">{{jobItem.isCurrent}}</p>
-    <p class="mb-1">{{jobItem.period.fromYear}} - {{jobItem.period.toYear}}</p>
+    <p class="mb-1">{{jobItem?.companyName}}</p>
+    <small>{{jobItem?.industry}}</small>
+    <p class="mb-1">{{jobItem?.description}}</p>
+    <!--<p class="mb-1">{{jobItem?.isCurrent}}</p>-->
+    <p class="mb-1">
+        {{jobItem.period?.startMonth}}/{{jobItem.period?.startYear}}
+        till
+        {{jobItem.period?.endMonth}}/{{jobItem.period?.endYear}}
+    </p>
 </a>

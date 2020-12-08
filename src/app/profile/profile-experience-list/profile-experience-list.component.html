@@ -23,6 +23,7 @@
                         *ngFor="let job of jobs; let i=index;"
                         [jobItem]="job"
                         [index]="i"
+                        [experienceId] = "job.experienceId"
                     ></app-profile-experience-item>
 
                 </div>

@@ -1,10 +1,9 @@
-import { DropdownDirective } from './dropdown.directive';
-import {element} from 'protractor';
-import {ElementRef} from '@angular/core';
+import {DropdownDirective} from './dropdown.directive';
 
 describe('DropdownDirective', () => {
-  it('should create an instance', () => {
-    const directive = new DropdownDirective();
-    expect(directive).toBeTruthy();
-  });
+    it('should create an instance', () => {
+        const elem: any = '';
+        const directive = new DropdownDirective(elem);
+        expect(directive).toBeTruthy();
+    });
 });

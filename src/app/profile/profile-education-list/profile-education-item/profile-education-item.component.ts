@@ -19,6 +19,5 @@ export class ProfileEducationItemComponent implements OnInit {
 
     onEditEducation(index: any): void {
         this.router.navigate(['edit/edit-education-profile'], {relativeTo: this.route});
-        console.log(index);
     }
 }

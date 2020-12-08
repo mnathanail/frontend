@@ -27,7 +27,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     onLogin(): void {
-        console.log(this.loginForm.valid);
         if (this.loginForm.valid) {
             this.loaderService.showLoader();
             this.proceedToApp = this.loginService.onLogin(this.loginForm.value)
@@ -35,7 +34,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                 .subscribe(
                     data => {
                         this.proceedToApp = data;
-                        console.log(data);
                     },
                     error => {
                     },

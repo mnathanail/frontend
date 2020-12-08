@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="float-right">
-                            <small class="edit-education pr-4">
+                            <small class="edit-education pr-4" (click)="onEditSkills()">
                                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil"
                                      fill="currentColor"
                                      xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="list-group">
+                <div class="list-group list-group-horizontal" style="display: grid!important;grid-template-columns: repeat(4, 1fr);">
                     <app-profile-skill-item
                         *ngFor="let skill of skills; let i=index;"
                         [skillItem]="skill"
