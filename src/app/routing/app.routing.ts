@@ -23,6 +23,7 @@ const appRouting: Routes = [
             {path: 'new/new-education-profile', component: ProfileEditEducationComponent},
             {path: 'edit/edit-experience-profile/:expId', component: ProfileEditWorkExperienceComponent},
             {path: 'new/new-experience-profile', component: ProfileEditWorkExperienceComponent},
+            {path: 'add/add-skills-profile', component: ProfileEditSkillsComponent},
             {path: 'edit/edit-skills-profile', component: ProfileEditSkillsComponent},
         ]
     }

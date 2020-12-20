@@ -115,9 +115,11 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
             );
     }
 
+/*
     onClose(): void {
        this.onClose();
     }
+*/
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
         /*if (this.photoProfileGroup.get('photoProfile').value !== '') {

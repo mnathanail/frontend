@@ -1,4 +1,4 @@
-export interface SkillNodeModel {
+export interface SkillNode {
     id: number;
     entityId: number;
     name: string;

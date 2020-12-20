@@ -1,7 +1,7 @@
-import {SkillNodeModel} from './skill-node-model';
+import {SkillNode} from './skill-node';
 
 export interface SkillModel {
-    skillNode: SkillNodeModel;
-    yoe: number;
+    skillNode: SkillNode;
+    yearsOfExperience: number;
     relUuid: string;
 }

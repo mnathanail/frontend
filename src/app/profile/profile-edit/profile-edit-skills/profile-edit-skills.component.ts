@@ -1,16 +1,18 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ProfileAbstractEdit} from '../profile-abstract-edit';
 import {HttpClient} from '@angular/common/http';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, debounceTime, distinctUntilChanged, filter, map, switchMap, tap} from 'rxjs/operators';
+import {Observable, of, Subject, Subscription} from 'rxjs';
+import {catchError, concatMap, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {SkillsService} from '../../service/skills/skills.service';
 import {LoaderService} from '../../../shared/loader/service/loader.service';
 import {SkillsMessagesService} from '../../service/skills/skills-messages.service';
 import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-model';
+import {SkillsStateService} from '../../service/skills/skills-state.service';
+import {StateModel} from '../../../shared/enums/state-model.enum';
 
 @Component({
     selector: 'app-profile-edit-skills',
@@ -29,9 +31,11 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     searching = false;
     searchFailed = false;
     editState = false;
+    initialFormValue: SkillModel[];
     private subscription = new Subscription();
     private crudSubscription = new Subscription();
     private getValues: { type: CrudEventsModel; data: SkillModel[] };
+    private destroy$ = new Subject<any>();
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -40,26 +44,31 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 private http: HttpClient,
                 private skillService: SkillsService,
                 private loaderService: LoaderService,
-                private skillMessages: SkillsMessagesService
+                private skillMessages: SkillsMessagesService,
+                private skillStateService: SkillsStateService,
     ) {
         super(config, modalService, router, route);
 
-        this.router.events
-            .pipe(filter(event => event instanceof NavigationStart),
-                filter((e: NavigationStart) => e.navigationTrigger === 'popstate'))
-            .subscribe((event: NavigationStart) => {
+        this.skillStateService.getSkillStateChanged()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                value => {
+                    this.editState = value.state === StateModel.EDIT;
+                });
 
-                this.editState = this.router.getCurrentNavigation().extras.state.mode === 'edit';
-                console.log(event)
-
-                this.router.getCurrentNavigation().extras.state = {...event.restoredState, navigationId: event.id};
-            });
-
-
-        /*this.editState = this.router.getCurrentNavigation().extras.state.mode === 'edit';*/
-
-
+        this.editState = this.router.url.indexOf('edit') > 0;
         this.skillMessages.getSkillChanged().subscribe(value => this.getValues = value);
+
+        /*        this.skillService.fetchCandidateSkills()
+                    .pipe(
+                        takeUntil(this.destroy$)
+                    )
+                    .subscribe(
+                        (value) => {
+                            this.getValues.data = value;
+                        }
+                    );*/
+
     }
 
     get aliasesEdit(): FormArray {
@@ -71,12 +80,14 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     }
 
     ngOnInit(): void {
+
         if (this.editState) {
             this.editSkillsForm = new FormGroup({
                 editSkills: new FormArray(
                     this.getValues.data.map(r => this.patchValues(r))
                 )
             });
+            this.initialFormValue = this.editSkillsForm.get('editSkills').value;
         } else {
             this.addSkillsForm = new FormGroup({
                 skillExcluded: new FormControl(''),
@@ -87,9 +98,11 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
 
     patchValues(v: SkillModel): FormGroup {
         return new FormGroup({
-            entityId: new FormControl(v.skillNode.entityId),
-            name: new FormControl(v.skillNode.name),
-            yearsOfExperience: new FormControl(v.yoe),
+            skillNode: new FormGroup({
+                entityId: new FormControl(v.skillNode.entityId),
+                name: new FormControl(v.skillNode.name)
+            }),
+            yearsOfExperience: new FormControl(v.yearsOfExperience),
             relUuid: new FormControl(v.relUuid)
         });
     }
@@ -185,7 +198,55 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         this.openModal(this.content);
     }
 
+    removeSkill(id: number, skillUuid: string): void {
+        const skills = this.editSkillsForm.get('editSkills') as FormArray;
+
+        this.skillService.deleteSkill(skillUuid)
+            .subscribe(
+                (value) => {
+                    if (value) {
+                        this.skillMessages.setSkillChanged({type: CrudEventsModel.DELETE, data: skills.value});
+                        skills.removeAt(id);
+                    }
+                },
+                error => {
+                    this.skillMessages.setSkillChangedError(error);
+                },
+                () => {
+                    console.log('completed!');
+                    this.delayedModalClose();
+                }
+            );
+    }
+
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
+    }
+
+    onSaveEdit(): void {
+        const current = this.editSkillsForm.get('editSkills').value;
+
+        const changed = current.filter((value, index) => {
+            return value.yearsOfExperience !== this.initialFormValue[index].yearsOfExperience;
+        });
+
+        if (changed.length > 0) {
+            this.skillService.updateSkills(changed)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(
+                    (value) => {
+                        console.log(value);
+                    },
+                    error => {
+                        console.log(error);
+                    },
+                    () => {
+                        console.log('complete');
+                    }
+                );
+        }
+        console.log(changed);
     }
 
     private createSkillsFormGroup(e): FormGroup {

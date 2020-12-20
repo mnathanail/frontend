@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-model';
 import {Endpoints} from '../../../endpoints/endpoints';
-import {SkillNodeModel} from '../../profile-skill-list/profile-skill-item/skill-node-model';
+import {SkillNode} from '../../profile-skill-list/profile-skill-item/skill-node';
 import {SkillEntityModel} from '../../profile-skill-list/profile-skill-item/skill-entity-model';
 
 @Injectable({providedIn: 'root'})
@@ -37,4 +37,15 @@ export class SkillsService {
         return this.http.post<SkillModel[]>(url, skills);
     }
 
+    updateSkills(skills: SkillModel[]): Observable<SkillModel[]> {
+        const url = Endpoints.SKILL_PATCH_LIST.replace(':id', '1');
+        return this.http.patch<SkillModel[]>(url, skills);
+    }
+
+    deleteSkill(skillUuid: string): Observable<boolean> {
+        const url = Endpoints.SKILL_CANDIDATE_DELETE
+        .replace(':id', '1')
+        .replace(':skillUuid', skillUuid);
+        return this.http.delete<boolean>(url);
+    }
 }

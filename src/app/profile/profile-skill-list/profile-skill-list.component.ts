@@ -6,6 +6,8 @@ import {SkillsMessagesService} from '../service/skills/skills-messages.service';
 import {Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CrudEventsModel} from '../../shared/enums/crud-events-model.enum';
+import {SkillsStateService} from '../service/skills/skills-state.service';
+import {StateModel} from '../../shared/enums/state-model.enum';
 
 @Component({
     selector: 'app-profile-skill-list',
@@ -22,7 +24,9 @@ export class ProfileSkillListComponent implements OnInit, OnDestroy {
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private skillService: SkillsService,
-                private skillsMessage: SkillsMessagesService) {
+                private skillsMessage: SkillsMessagesService,
+                private skillStateService: SkillsStateService
+    ) {
     }
 
     ngOnInit(): void {
@@ -44,21 +48,49 @@ export class ProfileSkillListComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 (value) => {
-                    this.skills = value.data;
+                    //this.skills = value.data;
+
+                    switch (value.type) {
+                        case CrudEventsModel.POST: {
+                            this.skills.unshift(...value.data);
+                            break;
+                        }
+                        case CrudEventsModel.UPDATE: {
+                            const index = this.skills.findIndex(skill => skill.relUuid === value.data[0].relUuid);
+                            if (index !== -1) {
+                                this.skills.splice(index, 1, value.data[0]);
+                            }
+                            break;
+                        }
+                        case CrudEventsModel.DELETE: {
+                            if (this.skills) {
+                                console.log(value);
+                                const index = this.skills.findIndex(skill => skill.relUuid === value.data[0].relUuid);
+                                if (index !== -1) {
+                                    this.skills.splice(index, 1);
+                                }
+                            }
+                            break;
+                        }
+                        case CrudEventsModel.EMPTY: {
+                            break;
+                        }
+                    }
                 }
             );
     }
 
     onAddSkill(): void {
-        this.router.navigate(['edit/edit-skills-profile'], {relativeTo: this.route, state: {mode: 'add'}});
+        this.router.navigate(['add/add-skills-profile'], {relativeTo: this.route});
     }
 
     onEditSkills(): void {
         this.skillsMessage.setSkillChanged({data: this.skills, type: CrudEventsModel.EMPTY});
-        this.router.navigate(['edit/edit-skills-profile'], {relativeTo: this.route, state: {mode: 'edit'}})
+        this.router.navigate(['edit/edit-skills-profile'], {relativeTo: this.route})
             .then(value => {
                 if (value) {
-                    this.skillsMessage.setSkillChanged({data: this.skills, type: CrudEventsModel.EMPTY});
+                    this.skillStateService.setSkillStateChanged({state: StateModel.EDIT});
+                    this.skillsMessage.setSkillChanged({data: this.skills, type: CrudEventsModel.UPDATE});
                 }
             })
             .catch(reason => {

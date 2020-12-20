@@ -51,12 +51,12 @@
                                             <button class="btn btn-primary btn-sm" type="button">
                                                 <span>{{skill.get('name').value}}</span>
                                                 <span (click)="removeSelectedSkill(i)">
-                                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x"
-                                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd"
-                                                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                            </svg>
-                                        </span>
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x"
+                                                         fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                          d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                                    </svg>
+                                                </span>
                                             </button>
                                         </div>
                                         <input type="number"
@@ -82,7 +82,7 @@
     </div>
 
     <div *ngIf="editState">
-        <form [formGroup]="editSkillsForm" *ngIf="editSkillsForm" (ngSubmit)="onSave()">
+        <form [formGroup]="editSkillsForm" *ngIf="editSkillsForm" (ngSubmit)="onSaveEdit()">
             <div class="modal-header">
                 <h4 class="modal-title" id="modal-basic-title-edit">Edit skills</h4>
                 <button type="button" class="close" aria-label="Close" (click)="onClose()">
@@ -94,17 +94,48 @@
                 <div class="row">
                     <div class="col-12 pb-1">
                         <div class="form-group">
-                            <div class="pr-2 pb-1" formArrayName="editSkills" *ngFor="let skill of aliasesEdit.controls; let i = index;">
-                                <ng-container [formGroupName]="i">
-                                    <input type="number"
-                                           formControlName="yearsOfExperience"
-                                           class="form-control yearsOfExperience"
-                                           value="{{skill.get('yearsOfExperience').value}}"
-                                    >
-                                    <input type="text" formControlName="name" value="{{skill.get('name').value}}">
-                                    <input type="hidden" formControlName="entityId" value="{{skill.get('entityId').value}}">
-                                    <input type="hidden" formControlName="relUuid" value="{{skill.get('relUuid').value}}">
-                                </ng-container>
+                            <div class="pr-2 pb-1" formArrayName="editSkills" >
+                                <div class="list-group list-group-horizontal"
+                                     style="display: grid!important;
+                                            grid-template-columns: repeat(auto-fill, minmax(250px, 10fr));">
+                                    <div *ngFor="let skill of aliasesEdit.controls; let i = index;">
+                                    <ng-container [formGroupName]="i" class="mb-2">
+                                            <div class="input-group pb-3">
+                                                <div class="input-group-append pb-3">
+
+                                                    <button class="btn btn-primary btn-sm text-truncate" style="max-width: 100px;" type="button" ngbTooltip="{{skill.get('skillNode.name').value}}">
+                                                        <span>{{skill.get('skillNode.name').value}}</span>
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" type="button">
+                                                        <span (click)="removeSkill(i, skill.get('relUuid').value)">
+                                                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x"
+                                                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd"
+                                                                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+
+                                                    <input type="number"
+                                                           formControlName="yearsOfExperience"
+                                                           class="form-control yearsOfExperience"
+                                                           min="1"
+                                                           value="{{skill.get('yearsOfExperience').value}}"
+                                                    >
+
+                                                    <input type="hidden" formControlName="relUuid"
+                                                           value="{{skill.get('relUuid').value}}">
+                                                    <div formGroupName="skillNode">
+                                                        <input type="hidden" formControlName="name"
+                                                               value="{{skill.get('skillNode.name').value}}">
+                                                        <input type="hidden" formControlName="entityId"
+                                                               value="{{skill.get('skillNode.entityId').value}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </ng-container>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,3 +156,14 @@
 <ng-container *ngTemplateOutlet="content" style="display: none;">
 </ng-container>
 -->
+
+
+
+<!-- <input type="number"
+       formControlName="yearsOfExperience"
+       class="form-control yearsOfExperience"
+       value="{{skill.get('yearsOfExperience').value}}"
+>
+<input type="text" formControlName="name" value="{{skill.get('name').value}}">
+<input type="hidden" formControlName="entityId" value="{{skill.get('entityId').value}}">
+<input type="hidden" formControlName="relUuid" value="{{skill.get('relUuid').value}}"> -->
