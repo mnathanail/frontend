@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup} from '@angular/forms';
 import {monthNames} from '../../../shared/months';
 import {ExperienceMessagesService} from '../../service/experience/experience-messages.service';
-import {pipe, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {ExperienceModel} from '../../profile-experience-list/experience-model';
 import {ExperienceImpl} from '../../profile-experience-list/experience-impl';
 import {ExperienceService} from '../../service/experience/experience.service';
@@ -12,7 +12,7 @@ import {ProfileAbstractEdit} from '../profile-abstract-edit';
 import {HttpClient} from '@angular/common/http';
 import {LoaderService} from '../../../shared/loader/service/loader.service';
 import {FormsMethods} from '../../../shared/forms/forms-methods';
-import {delay} from 'rxjs/operators';
+import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 
 @Component({
     selector: 'app-profile-edit-work-experience',
@@ -29,6 +29,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     toggleChecked = false;
     private title: string;
     private subscription = new Subscription();
+    private crudSubscription = new Subscription();
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -37,26 +38,19 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 private http: HttpClient,
                 private loaderService: LoaderService,
                 private experienceService: ExperienceService,
-                private experienceMessages: ExperienceMessagesService
+                private experienceMessages: ExperienceMessagesService,
     ) {
         super(config, modalService, router, route);
         this.initializeForm(new ExperienceImpl());
     }
 
     ngOnInit(): void {
-
         this.editState = this.router.url.indexOf('edit') > 0;
-
-        this.title = this.editState === true ? 'Edit Experience' : 'Add Experience';
-
+        const experienceId = this.route.snapshot.params.expId;
         if (this.editState) {
-            this.subscription = this.experienceMessages.getExperienceChanged().subscribe(
-                (value) => {
-                    this.initializeForm(value);
-                }
-            );
+            this.fetchSelectedExperience(experienceId);
         }
-
+        this.title = this.editState === true ? 'Edit Experience' : 'Add Experience';
         this._populateSelectYears();
         this._populateSelectMonths();
     }
@@ -65,21 +59,6 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
         this.openModal(this.content);
     }
 
-    _populateSelectYears(): any[] {
-        const year = new Date().getFullYear();
-        const current = year;
-        for (let i = 1960; i <= year; i++) {
-            this.years.push(i);
-        }
-        return this.years.reverse();
-    }
-
-    _populateSelectMonths(): any[] {
-        for (let i = 0; i < 12; i++) {
-            this.months.push({name: monthNames[i], value: i + 1});
-        }
-        return this.months;
-    }
 
     isCurrentChecked(): void {
         this.toggleChecked = !this.toggleChecked;
@@ -94,10 +73,9 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
             const experienceId = this.editExperienceForm.get('experienceId').value;
             this.experienceService.patchExperience(a as ExperienceModel, experienceId)
-                .pipe(delay(500))
+                /*.pipe(delay(500))*/
                 .subscribe((value) => {
-                        console.log(value);
-                        this.experienceMessages.setExperienceChanged(value);
+                        this.experienceMessages.setExperienceChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
                     error => {
                         this.experienceMessages.setExperienceChangedError(error);
@@ -105,11 +83,38 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                     () => {
                         this.delayedModalClose();
                     }
-            );
+                );
         } else {
-            console.log('Add new Experience');
-            console.log(this.editExperienceForm.value);
+            this.experienceService.setExperience(this.editExperienceForm.value)
+                /*.pipe(delay(500))*/
+                .subscribe(
+                    (value) => {
+                        this.experienceMessages.setExperienceChanged({type: CrudEventsModel.POST, data: value});
+                    },
+                    error => {
+                        this.experienceMessages.setExperienceChangedError(error);
+                    },
+                    () => {
+                        this.delayedModalClose();
+                    }
+                );
         }
+    }
+
+    deleteExperienceItem(experienceId: string): void {
+        this.experienceService.deleteExperience(experienceId)
+            .subscribe((value) => {
+                    if (value === true) {
+                        this.experienceMessages.setExperienceChanged({type: CrudEventsModel.DELETE, data: this.editExperienceForm.value});
+                    }
+                },
+                error => {
+                    this.experienceMessages.setExperienceChangedError(error);
+                },
+                () => {
+                    console.log('completed!');
+                    this.delayedModalClose();
+                });
     }
 
     private initializeForm(value: ExperienceModel): void {
@@ -119,13 +124,38 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
             industry: new FormControl(value.industry),
             description: new FormControl(value.description),
             period: new FormGroup({
-                startYear: new FormControl(value.period.fromYear),
-                startMonth: new FormControl(value.period.fromMonth),
-                endYear: new FormControl(value.period.toYear),
-                endMonth: new FormControl(value.period.toMonth)
+                startYear: new FormControl(value.period?.startYear),
+                startMonth: new FormControl(value.period?.startMonth),
+                endYear: new FormControl(value.period?.endYear),
+                endMonth: new FormControl(value.period?.endMonth)
             }),
             isCurrent: new FormControl(value.isCurrent),
             experienceId: new FormControl(value.experienceId)
         });
+    }
+
+    private _populateSelectYears(): any[] {
+        const year = new Date().getFullYear();
+        const current = year;
+        for (let i = 1960; i <= year; i++) {
+            this.years.push(i);
+        }
+        return this.years.reverse();
+    }
+
+    private _populateSelectMonths(): any[] {
+        for (let i = 0; i < 12; i++) {
+            this.months.push({name: monthNames[i], value: i + 1});
+        }
+        return this.months;
+    }
+
+    private fetchSelectedExperience(experienceId: string): void {
+        this.experienceService.fetchExperience(experienceId)
+            .subscribe(
+                (value) => {
+                    this.initializeForm(value);
+                }
+            );
     }
 }

@@ -15,8 +15,10 @@ export class ExperienceService {
         return this.http.get<ExperienceModel[]>(url);
     }
 
-    fetchExperience(id: number): Observable<ExperienceModel> {
-        const url = Endpoints.PROFILE_GET.replace(':id', '1');
+    fetchExperience(experienceId: string): Observable<ExperienceModel> {
+        const url = Endpoints.EXPERIENCE_GET
+            .replace(':id', '1')
+            .replace(':experienceId', experienceId);
         return this.http.get<ExperienceModel>(url);
     }
 
@@ -32,11 +34,11 @@ export class ExperienceService {
         return this.http.patch<ExperienceModel>(url, experienceModel);
     }
 
-    deleteExperience(experienceId: string): Observable<ExperienceModel> {
-        const url = Endpoints.EXPERIENCE_PATCH
+    deleteExperience(experienceId: string): Observable<boolean> {
+        const url = Endpoints.EXPERIENCE_DELETE
             .replace(':id', '1')
-            .replace(':experienceId', String(experienceId));
-        return this.http.delete<ExperienceModel>(url);
+            .replace(':experienceId', experienceId);
+        return this.http.delete<boolean>(url);
     }
 
 }

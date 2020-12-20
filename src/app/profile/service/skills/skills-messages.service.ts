@@ -1,28 +1,29 @@
-import {SummaryModel} from '../../profile-summary/summary-model';
 import {Observable, Subject} from 'rxjs';
 import {Injectable} from '@angular/core';
+import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-model';
+import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SkillsMessagesService {
 
-    private summaryChanged = new Subject<SummaryModel>();
+    private skillChanged = new Subject<{ type: CrudEventsModel, data: SkillModel[] }>();
 
-    public getSummaryChanged(): Observable<SummaryModel> {
-        return this.summaryChanged.asObservable();
+    public getSkillChanged(): Observable<{ type: CrudEventsModel, data: SkillModel[] }> {
+        return this.skillChanged.asObservable();
     }
 
-    public setSummaryChanged(value: SummaryModel): void {
-        this.summaryChanged.next(value);
+    public setSkillChanged(value: { type: CrudEventsModel, data: SkillModel[] }): void {
+        this.skillChanged.next(value);
     }
 
-    public setSummaryChangedError(error: any): void {
-        this.summaryChanged.error(error);
+    public setSkillChangedError(error: any): void {
+        this.skillChanged.error(error);
     }
 
-    public setSummaryChangedComplete(): void {
-        this.summaryChanged.complete();
+    public setSkillChangedComplete(): void {
+        this.skillChanged.complete();
     }
 
 

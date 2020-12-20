@@ -10,4 +10,5 @@ export class ExperienceImpl implements ExperienceModel{
     jobTitle = '';
     experienceId = '';
     period = new PeriodImpl();
+    action = '';
 }

@@ -13,24 +13,21 @@ export class ProfileExperienceItemComponent implements OnInit, OnDestroy {
 
     @Input() jobItem: ExperienceModel;
     @Input() index: string;
+    @Input() experienceId: string;
     private subscriptionExperience: Subscription;
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
-                private experienceMessages: ExperienceMessagesService) {
+    ) {
     }
 
     ngOnInit(): void {
     }
 
-    onEditExperience(index: string): void {
-        console.log(index);
-        console.log(this.jobItem)
-        this.experienceMessages.setExperienceChanged(this.jobItem);
-        this.router.navigate(['edit/edit-experience-profile/' + index], {relativeTo: this.route});
+    onEditExperience(experienceId: string): void {
+        this.router.navigate(['edit/edit-experience-profile/' + this.experienceId], {relativeTo: this.route});
     }
 
     ngOnDestroy(): void {
-        //this.experienceMessages.setExperienceChangedComplete();
     }
 }

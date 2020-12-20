@@ -79,13 +79,20 @@
             </div>
 
             <div class="form-group">
-                <input type="hidden" class="form-control" id="experienceId" formControlName="experienceId">
+                <input type="hidden" #experienceId class="form-control" id="experienceId" formControlName="experienceId">
             </div>
 
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-outline-success">Takis</button>
-            <button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button>
+            <div class="d-flex">
+                <div class="mr-auto p-1" *ngIf="this.editState">
+                    <button type="button" class="btn btn-outline-danger float-right"
+                            (click)="deleteExperienceItem(experienceId.value)"
+                    >Delete</button>
+                </div>
+                <div class="p-1"><button type="submit" class="btn btn-outline-success">Save</button></div>
+                <div class="p-1"><button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button></div>
+            </div>
         </div>
     </form>
 </ng-template>
