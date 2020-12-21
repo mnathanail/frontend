@@ -13,6 +13,7 @@ import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-model';
 import {SkillsStateService} from '../../service/skills/skills-state.service';
 import {StateModel} from '../../../shared/enums/state-model.enum';
+import {SkillNode} from '../../profile-skill-list/profile-skill-item/skill-node';
 
 @Component({
     selector: 'app-profile-edit-skills',
@@ -36,6 +37,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     private crudSubscription = new Subscription();
     private getValues: { type: CrudEventsModel; data: SkillModel[] };
     private destroy$ = new Subject<any>();
+    searchTerm = '';
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -60,7 +62,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         this.skillMessages.getSkillChanged().subscribe(value => this.getValues = value);
 
         /*        this.skillService.fetchCandidateSkills()
-                    .pipe(
+                    .filter(
                         takeUntil(this.destroy$)
                     )
                     .subscribe(
@@ -85,7 +87,8 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
             this.editSkillsForm = new FormGroup({
                 editSkills: new FormArray(
                     this.getValues.data.map(r => this.patchValues(r))
-                )
+                ),
+                filterCandidateSkillList: new FormControl('')
             });
             this.initialFormValue = this.editSkillsForm.get('editSkills').value;
         } else {
@@ -194,6 +197,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
 
     formatMatches = (x: { name: string }) => x.name;
 
+
     ngAfterViewInit(): void {
         this.openModal(this.content);
     }
@@ -205,8 +209,10 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
             .subscribe(
                 (value) => {
                     if (value) {
-                        this.skillMessages.setSkillChanged({type: CrudEventsModel.DELETE, data: skills.value});
+                        const removedSkill = [];
+                        removedSkill.push(skills.at(id).value);
                         skills.removeAt(id);
+                        this.skillMessages.setSkillChanged({type: CrudEventsModel.DELETE, data: removedSkill});
                     }
                 },
                 error => {
@@ -214,7 +220,6 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 },
                 () => {
                     console.log('completed!');
-                    this.delayedModalClose();
                 }
             );
     }
@@ -236,17 +241,17 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
-                        console.log(value);
+                        this.skillMessages.setSkillChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
                     error => {
-                        console.log(error);
+                        this.skillMessages.setSkillChangedError(error);
                     },
                     () => {
                         console.log('complete');
+                        this.delayedModalClose();
                     }
                 );
         }
-        console.log(changed);
     }
 
     private createSkillsFormGroup(e): FormGroup {
@@ -271,5 +276,9 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         setTimeout(() => {
             this.addSkillsForm.get('skillExcluded').setValue('');
         }, 200);
+    }
+
+    searchCandidateSkillList(value: any): void {
+        this.searchTerm = value;
     }
 }

@@ -73,7 +73,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
             const experienceId = this.editExperienceForm.get('experienceId').value;
             this.experienceService.patchExperience(a as ExperienceModel, experienceId)
-                /*.pipe(delay(500))*/
+                /*.filter(delay(500))*/
                 .subscribe((value) => {
                         this.experienceMessages.setExperienceChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
@@ -86,7 +86,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 );
         } else {
             this.experienceService.setExperience(this.editExperienceForm.value)
-                /*.pipe(delay(500))*/
+                /*.filter(delay(500))*/
                 .subscribe(
                     (value) => {
                         this.experienceMessages.setExperienceChanged({type: CrudEventsModel.POST, data: value});

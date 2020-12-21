@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (this.loginForm.valid) {
             this.loaderService.showLoader();
             this.proceedToApp = this.loginService.onLogin(this.loginForm.value)
-                // .pipe(delay(3000))
+                // .filter(delay(3000))
                 .subscribe(
                     data => {
                         this.proceedToApp = data;

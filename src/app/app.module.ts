@@ -26,6 +26,7 @@ import {ProfileEducationItemComponent} from './profile/profile-education-list/pr
 import {ProfileSummaryComponent} from './profile/profile-summary/profile-summary.component';
 import {ProfileSkillListComponent} from './profile/profile-skill-list/profile-skill-list.component';
 import {ProfileSkillItemComponent} from './profile/profile-skill-list/profile-skill-item/profile-skill-item.component';
+import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
 
 @NgModule({
     declarations: [
@@ -49,6 +50,7 @@ import {ProfileSkillItemComponent} from './profile/profile-skill-list/profile-sk
         ProfileSummaryComponent,
         ProfileSkillListComponent,
         ProfileSkillItemComponent,
+        FilterByNamePipe,
     ],
     imports: [
         BrowserModule,

@@ -48,24 +48,26 @@ export class ProfileSkillListComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 (value) => {
-                    //this.skills = value.data;
-
                     switch (value.type) {
                         case CrudEventsModel.POST: {
-                            this.skills.unshift(...value.data);
+                            this.skills = value.data;
                             break;
                         }
                         case CrudEventsModel.UPDATE: {
-                            const index = this.skills.findIndex(skill => skill.relUuid === value.data[0].relUuid);
+                            this.skills = value.data;
+                            /*const index = this.skills.findIndex((skill, i) => skill.relUuid === value.data[i].relUuid);
                             if (index !== -1) {
                                 this.skills.splice(index, 1, value.data[0]);
-                            }
+                            }*/
                             break;
                         }
                         case CrudEventsModel.DELETE: {
                             if (this.skills) {
-                                console.log(value);
-                                const index = this.skills.findIndex(skill => skill.relUuid === value.data[0].relUuid);
+
+                                const index = this.skills.findIndex((skill, i) => {
+                                        return skill.relUuid === value.data[0].relUuid;
+                                });
+
                                 if (index !== -1) {
                                     this.skills.splice(index, 1);
                                 }

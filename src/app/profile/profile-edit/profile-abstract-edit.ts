@@ -7,6 +7,7 @@ import {Directive, ElementRef, HostListener} from '@angular/core';
 export abstract class ProfileAbstractEdit {
 
     private readonly expId: string;
+    private readonly eduId: string;
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
                 protected router: Router,
@@ -49,6 +50,10 @@ export abstract class ProfileAbstractEdit {
 
     getExperienceId(): string{
         return this.route.snapshot.params.expId;
+    }
+
+    getEducationId(): string{
+        return this.route.snapshot.params.eduId;
     }
 
     getCandidateId(): string{

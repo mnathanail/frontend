@@ -1,6 +1,6 @@
 <div class="list-group-item list-group-item-action">
     <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">{{education.university}}</h5>
+        <h5 class="mb-1">{{educationItem?.school}}</h5>
         <small class="edit-education" (click)="onEditEducation(index)">
             <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg">
@@ -12,7 +12,12 @@
             </svg>
         </small>
     </div>
-    <p class="mb-1">{{education.title}}</p>
-    <small>{{education.degree}}</small>
-    <p class="mb-1">{{education.dateStart}} - {{education.dateEnd}}</p>
+    <p class="mb-1">{{educationItem?.title}}</p>
+    <small>{{educationItem?.degree}}</small>
+
+    <p class="mb-1">
+        {{educationItem?.period?.startMonth}}/{{educationItem?.period?.startYear}}
+        till
+        {{educationItem?.period?.endMonth}}/{{educationItem?.period?.endYear}}
+    </p>
 </div>
