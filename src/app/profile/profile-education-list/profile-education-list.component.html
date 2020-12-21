@@ -1,4 +1,4 @@
-<div class="row pb-5">
+<div class="row pb-5" *ngIf="educations?.length">
     <div class="col-12">
         <div class="card">
             <h5 class="card-header"><span>{{sectionTitle}}</span>
@@ -17,11 +17,12 @@
             <div class="card-body">
                 <!--<h5 class="card-title">Special title treatment</h5>
                 <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>-->
-                <div class="list-group" *ngIf="education.length>0;">
+                <div class="list-group" *ngIf="educations.length>0;">
                     <app-profile-education-item
-                        *ngFor="let educationItem of education; let i=index;"
-                        [education]=educationItem
-                        [index]=i>
+                        *ngFor="let education of educations; let i=index;"
+                        [educationItem]=education
+                        [index]=i
+                        [educationId]="education.experienceId">
                     </app-profile-education-item>
                 </div>
             </div>

@@ -93,12 +93,20 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-12 pb-1">
+                        <div class="md-form mb-3">
+                            <input class="form-control"
+                                   (keyup)="searchCandidateSkillList(editSkillsForm.get('filterCandidateSkillList').value)"
+                                   formControlName="filterCandidateSkillList"
+                                   type="text"
+                                   placeholder="Search"
+                                   aria-label="Search">
+                        </div>
                         <div class="form-group">
                             <div class="pr-2 pb-1" formArrayName="editSkills" >
                                 <div class="list-group list-group-horizontal"
                                      style="display: grid!important;
                                             grid-template-columns: repeat(auto-fill, minmax(250px, 10fr));">
-                                    <div *ngFor="let skill of aliasesEdit.controls; let i = index;">
+                                    <div *ngFor="let skill of aliasesEdit.controls | filterByName: searchTerm; let i = index;">
                                     <ng-container [formGroupName]="i" class="mb-2">
                                             <div class="input-group pb-3">
                                                 <div class="input-group-append pb-3">
