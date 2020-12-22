@@ -23,7 +23,7 @@ export class ProfileEducationItemComponent implements OnInit, OnDestroy {
     }
 
     onEditEducation(index: any): void {
-        this.router.navigate(['edit/edit-education-profile'], {relativeTo: this.route});
+        this.router.navigate(['edit/edit-education-profile/' + this.educationId], {relativeTo: this.route});
     }
 
     ngOnDestroy(): void {
