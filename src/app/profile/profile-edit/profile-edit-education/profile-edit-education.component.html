@@ -19,28 +19,57 @@
                 <label for="editEducationSchool">School</label>
                 <input type="text" class="form-control" id="editEducationSchool" formControlName="school" placeholder="School">
             </div>
-            <div class="row">
+            <div class="row" formGroupName="period">
                 <div class="col-sm-6">
-                    <div class="form-group">
-                        <label for="editEducationStartYear">Start Year</label>
-                        <select class="form-control" id="editEducationStartYear" formControlName="startYear">
-                            <option *ngFor="let year of years;">{{year}}</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceStartYear">Start Year</label>
+                                <select class="form-control" id="editExperienceStartYear" formControlName="startYear">
+                                    <option *ngFor="let year of years;" value="{{year}}">{{year}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceStartMonth">Start Month</label>
+                                <select class="form-control" id="editExperienceStartMonth" formControlName="startMonth">
+                                    <option *ngFor="let month of months;"
+                                            value="{{month.value}}">{{month.name}}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <div class="form-group">
-                        <label for="editEducationEndYear">End Year</label>
-                        <select class="form-control" id="editEducationEndYear" formControlName="endYear">
-                            <option *ngFor="let year of years;">{{year}}</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceEndYear">End Year</label>
+                                <select class="form-control" id="editExperienceEndYear" formControlName="endYear">
+                                    <option *ngFor="let year of years;" value="{{year}}">{{year}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="editExperienceEndMonth">End Month</label>
+                                <select class="form-control" id="editExperienceEndMonth" formControlName="endMonth">
+                                    <option *ngFor="let month of months;"
+                                            value="{{month.value}}">{{month.name}}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="form-group">
+                <input type="hidden" #educationId class="form-control" id="educationId" formControlName="educationId">
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-outline-success" (click)="c('Save click')">Save</button>
+        <button type="button" class="btn btn-outline-success" (click)="onSubmit()">Save</button>
         <button type="button" class="btn btn-outline-dark" (click)="onClose()">Dismiss</button>
     </div>
 </ng-template>

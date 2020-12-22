@@ -11,31 +11,31 @@ export class EducationService {
     }
 
     fetchEducationList(): Observable<EducationModel[]> {
-        const url = Endpoints.EXPERIENCE_LIST_GET.replace(':id', '1');
+        const url = Endpoints.EDUCATION_LIST_GET.replace(':id', '1');
         return this.http.get<EducationModel[]>(url);
     }
 
     fetchEducation(educationId: string): Observable<EducationModel> {
-        const url = Endpoints.EXPERIENCE_GET
+        const url = Endpoints.EDUCATION_GET
             .replace(':id', '1')
             .replace(':educationId', educationId);
         return this.http.get<EducationModel>(url);
     }
 
     setEducation(educationModel: EducationModel): Observable<EducationModel> {
-        const url = Endpoints.EXPERIENCE_SAVE.replace(':id', '1');
+        const url = Endpoints.EDUCATION_SAVE.replace(':id', '1');
         return this.http.post<EducationModel>(url, educationModel);
     }
 
     patchEducation(educationModel: EducationModel, educationId: string): Observable<EducationModel> {
-        const url = Endpoints.EXPERIENCE_PATCH
+        const url = Endpoints.EDUCATION_PATCH
             .replace(':id', '1')
             .replace(':educationId', String(educationId));
         return this.http.patch<EducationModel>(url, educationModel);
     }
 
     deleteEducatione(educationId: string): Observable<boolean> {
-        const url = Endpoints.EXPERIENCE_DELETE
+        const url = Endpoints.EDUCATION_DELETE
             .replace(':id', '1')
             .replace(':educationId', educationId);
         return this.http.delete<boolean>(url);

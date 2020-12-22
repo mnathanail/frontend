@@ -53,11 +53,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     workExperienceAction(): void {
-        this.router.navigate(['edit/edit-experience-profile'], {relativeTo: this.route});
+        this.router.navigate(['new/new-experience-profile'], {relativeTo: this.route});
     }
 
     educationAction(): void {
-        this.router.navigate(['edit/edit-education-profile'], {relativeTo: this.route});
+        this.router.navigate(['new/new-education-profile'], {relativeTo: this.route});
     }
 
     skillsAction(): void {

@@ -19,7 +19,7 @@ const appRouting: Routes = [
         children: [
             {path: 'edit/edit-photo-profile', component: ProfileEditPhotoComponent, canDeactivate: [CanDeactivateGuard]},
             {path: 'edit/edit-intro-profile', component: ProfileEditSummaryComponent},
-            {path: 'edit/edit-education-profile', component: ProfileEditEducationComponent},
+            {path: 'edit/edit-education-profile/:eduId', component: ProfileEditEducationComponent},
             {path: 'new/new-education-profile', component: ProfileEditEducationComponent},
             {path: 'edit/edit-experience-profile/:expId', component: ProfileEditWorkExperienceComponent},
             {path: 'new/new-experience-profile', component: ProfileEditWorkExperienceComponent},

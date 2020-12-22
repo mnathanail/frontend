@@ -65,7 +65,6 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
         this.openModal(this.content);
     }
 
-
     isCurrentChecked(): void {
         this.toggleChecked = !this.toggleChecked;
     }
@@ -77,10 +76,12 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     onSubmit(): void {
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editEducationForm);
-            const experienceId = this.editEducationForm.get('experienceId').value;
-            this.educationService.patchEducation(a as EducationModel, experienceId)
+            const educationId = this.editEducationForm.get('educationId').value;
+            console.log(a);
+            this.educationService.patchEducation(a as EducationModel, educationId)
                 /*.filter(delay(500))*/
                 .subscribe((value) => {
+                        console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
                     error => {
@@ -95,6 +96,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                 /*.filter(delay(500))*/
                 .subscribe(
                     (value) => {
+                        console.log(value)
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.POST, data: value});
                     },
                     error => {
@@ -134,6 +136,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                 endYear: new FormControl(value?.period?.endYear),
                 endMonth: new FormControl(value?.period?.endMonth)
             }),
+            educationId: new FormControl(value.educationId)
         });
 
     }
