@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">
+                <i class="bi bi-search"></i>
+            </span>
+        </div>
+        <input type="text"
+               class="form-control"
+               placeholder="Search By Skill(s).."
+               #searchForSkill
+               [ngbTypeahead]="search"
+               [inputFormatter]="formatMatches"
+               [resultFormatter]="formatMatches">
+        <button class="btn btn-success" (click)="onEnter(searchForSkill.value)">
+            Search
+        </button>
+    </div>
+    <small class="form-text text-muted">For accurate results please either search by only one skill or use comma to separate multiple skiils</small>
+    <br>
+
+    <router-outlet></router-outlet>
+</div>

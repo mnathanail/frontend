@@ -1,6 +1,6 @@
 export class Endpoints {
     static FAKE_SERVER_POST = 'https://jsonplaceholder.typicode.com/posts';
-    static LOGIN = 'http://localhost:8080/login';
+    static LOGIN = 'http://localhost:8080/authenticate';
 
     static SUMMARY_POST = 'http://localhost:8080/profile/:id/save/summary';
     static SUMMARY_UPDATE = 'http://localhost:8080/profile/:id/update/summary';
@@ -28,4 +28,16 @@ export class Endpoints {
     static EXPERIENCE_SAVE = 'http://localhost:8080/profile/:id/save/experience';
     static EXPERIENCE_PATCH = 'http://localhost:8080/profile/:id/patch/experience/:experienceId';
     static EXPERIENCE_DELETE = 'http://localhost:8080/profile/:id/delete/experience/:experienceId';
+
+    static JOB_SAVE = 'http://localhost:8080/controller/job-posting/:recruiterId/save/job';
+    static JOB_GET_BY_ID = 'http://localhost:8080/controller/job-view/get/job/:jobId';
+    static JOB_PATCH = 'http://localhost:8080/controller/:recruiterId/patch/job/:jobId';
+    static JOB_DELETE = 'http://localhost:8080/controller/:recruiterId/delete/job/:jobId';
+    static JOB_CANDIDATE_APPLIED = 'http://localhost:8080/controller/:candidateId/get/job-list';
+    static CANDIDATE_APPLIED_FOR_JOB = 'http://localhost:8080/controller/candidate/:candidateId/apply/job/:jobId';
+    static JOB_CANDIDATE_RECOMMENDATION = 'http://localhost:8080/controller/:candidateId/get/recommendation/job-list';
+    static JOB_RECRUITER_MANAGES = 'http://localhost:8080/controller/:recruiterId/get/job-list';
+
+    static CANDIDATE_SEARCH_JOB_BY_KEYWORDS = 'http://localhost:8080/controller/candidate/search/job/keywords';
+
 }

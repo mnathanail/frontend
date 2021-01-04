@@ -5,6 +5,7 @@ import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-mode
 import {Endpoints} from '../../../endpoints/endpoints';
 import {SkillNode} from '../../profile-skill-list/profile-skill-item/skill-node';
 import {SkillEntityModel} from '../../profile-skill-list/profile-skill-item/skill-entity-model';
+import {JobModel} from '../../../jobs/job-model';
 
 @Injectable({providedIn: 'root'})
 export class SkillsService {

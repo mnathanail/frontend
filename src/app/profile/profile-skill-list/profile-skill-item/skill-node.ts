@@ -3,4 +3,3 @@ export interface SkillNode {
     entityId: number;
     name: string;
 }
-

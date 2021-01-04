@@ -2,8 +2,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {LoginService} from './service/login.service';
 import {Subscription} from 'rxjs';
-import {delay} from 'rxjs/operators';
 import {LoaderService} from '../shared/loader/service/loader.service';
+import {Router} from '@angular/router';
+import {TokenStorageService} from '../shared/service/token-storage.service';
 
 @Component({
     selector: 'app-login',
@@ -14,7 +15,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;
     proceedToApp: Subscription;
 
-    constructor(private loginService: LoginService, private loaderService: LoaderService) {
+    constructor(private loginService: LoginService,
+                private loaderService: LoaderService,
+                private router: Router,
+                private tokenService: TokenStorageService) {
 
     }
 
@@ -32,8 +36,15 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.proceedToApp = this.loginService.onLogin(this.loginForm.value)
                 // .filter(delay(3000))
                 .subscribe(
-                    data => {
-                        this.proceedToApp = data;
+                    (data) => {
+                        if (data.headers != null && data.body != null && data.ok) {
+
+                            const token = data.headers.get('Authorization');
+                            this.tokenService.saveToken(token);
+                            setTimeout(() => {
+                                this.router.navigate([`profile/${data.body.id}`]);
+                            }, 500);
+                        }
                     },
                     error => {
                     },

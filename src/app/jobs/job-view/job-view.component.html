@@ -1,0 +1,16 @@
+<button class="btn btn-success" (click)="applyForJob(jobValue?.jobId)">
+    Apply
+</button> <br>
+{{jobValue?.jobId}} <br>
+{{jobValue?.jobTitle}} <br>
+{{jobValue?.description}} <br>
+
+<ul>
+    <li *ngFor="let jobSkill of jobValue?.requiredSkills;">
+        {{jobSkill.skillNode?.name}} - {{jobSkill?.yearsOfExperience}}
+    </li>
+</ul>
+
+
+<button class="btn btn-danger mr-1" (click)="deleteJob(jobValue?.jobId)">Delete</button>
+<button class="btn btn-info ml-1" (click)="updateJob(jobValue?.jobId)">Update</button>

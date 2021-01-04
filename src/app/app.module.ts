@@ -27,6 +27,11 @@ import {ProfileSummaryComponent} from './profile/profile-summary/profile-summary
 import {ProfileSkillListComponent} from './profile/profile-skill-list/profile-skill-list.component';
 import {ProfileSkillItemComponent} from './profile/profile-skill-list/profile-skill-item/profile-skill-item.component';
 import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
+import { JobsComponent } from './jobs/jobs.component';
+import { JobPostingComponent } from './jobs/job-posting/job-posting.component';
+import { JobViewComponent } from './jobs/job-view/job-view.component';
+import { JobSearchListComponent } from './jobs/job-search-list/job-search-list.component';
+import { JobSearchItemComponent } from './jobs/job-search-list/job-search-item/job-search-item.component';
 
 @NgModule({
     declarations: [
@@ -51,6 +56,11 @@ import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
         ProfileSkillListComponent,
         ProfileSkillItemComponent,
         FilterByNamePipe,
+        JobsComponent,
+        JobPostingComponent,
+        JobViewComponent,
+        JobSearchListComponent,
+        JobSearchItemComponent,
     ],
     imports: [
         BrowserModule,

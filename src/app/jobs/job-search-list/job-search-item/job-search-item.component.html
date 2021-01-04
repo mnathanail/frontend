@@ -1,0 +1,14 @@
+<div class="tab-content" *ngIf="jobItem">
+    <div class="tab-pane active" id="home" role="tabpanel">
+        <h3>
+            <a routerLink="../../job-view/{{jobItem.jobId}}">
+                {{jobItem?.jobTitle}}
+            </a>
+        </h3>
+    </div>
+</div>
+
+{{this.jobItem | json }}
+<button class="btn btn-success" (click)="applyForJob(jobItem?.jobId)">
+    Apply
+</button>
