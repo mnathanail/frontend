@@ -8,30 +8,34 @@ import {takeUntil} from 'rxjs/operators';
 import {CrudEventsModel} from '../../shared/enums/crud-events-model.enum';
 import {SkillsStateService} from '../service/skills/skills-state.service';
 import {StateModel} from '../../shared/enums/state-model.enum';
+import {ProfileAbstract} from '../abstract-profile';
 
 @Component({
     selector: 'app-profile-skill-list',
     templateUrl: './profile-skill-list.component.html',
     styleUrls: ['./profile-skill-list.component.css']
 })
-export class ProfileSkillListComponent implements OnInit, OnDestroy {
+export class ProfileSkillListComponent extends ProfileAbstract implements OnInit, OnDestroy {
 
     skills: SkillModel[];
     private destroy$ = new Subject<any>();
     private skillsMessagesSubscription = new Subscription();
     private skillsSubscription = new Subscription();
+    candidateId: string;
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
+    constructor(protected router: Router,
+                protected route: ActivatedRoute,
                 private skillService: SkillsService,
                 private skillsMessage: SkillsMessagesService,
                 private skillStateService: SkillsStateService
     ) {
+        super(router, route);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
 
-        this.skillsSubscription = this.skillService.fetchCandidateSkills()
+        this.skillsSubscription = this.skillService.fetchCandidateSkills(this.candidateId)
             .pipe(
                 takeUntil(this.destroy$)
             )

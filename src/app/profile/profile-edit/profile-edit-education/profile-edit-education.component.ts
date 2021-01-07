@@ -35,6 +35,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     private title: string;
     private subscription = new Subscription();
     private crudSubscription = new Subscription();
+    candidateId: string;
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -46,6 +47,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                 private educationMessages: EducationMessagesService,
     ) {
         super(config, modalService, router, route);
+        this.candidateId = this.getCandidateId();
         this.initializeForm(new EducationImpl());
     }
 
@@ -53,9 +55,9 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
         this.editState = this.router.url.indexOf('edit') > 0;
 
         this.title = this.editState === true ? 'Edit Education' : 'Add Education';
-        const educationId = this.route.snapshot.params.eduId;
         if (this.editState) {
-            this.fetchSelectedEducation(educationId);
+            const educationId = this.getEducationId();
+            this.fetchSelectedEducation(this.candidateId, educationId);
         }
         this._populateSelectYears();
         this._populateSelectMonths();
@@ -78,7 +80,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
             const a = FormsMethods.getDirtyValues(this.editEducationForm);
             const educationId = this.editEducationForm.get('educationId').value;
             console.log(a);
-            this.educationService.patchEducation(a as EducationModel, educationId)
+            this.educationService.patchEducation(a as EducationModel, this.candidateId, educationId)
                 /*.filter(delay(500))*/
                 .subscribe((value) => {
                         console.log(value);
@@ -92,11 +94,11 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                     }
                 );
         } else {
-            this.educationService.setEducation(this.editEducationForm.value)
+            this.educationService.setEducation(this.candidateId, this.editEducationForm.value)
                 /*.filter(delay(500))*/
                 .subscribe(
                     (value) => {
-                        console.log(value)
+                        console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.POST, data: value});
                     },
                     error => {
@@ -110,7 +112,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     }
 
     deleteExperienceItem(experienceId: string): void {
-        this.educationService.deleteEducatione(experienceId)
+        this.educationService.deleteEducatione(this.candidateId, experienceId)
             .subscribe((value) => {
                     if (value === true) {
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.DELETE, data: this.editEducationForm.value});
@@ -157,8 +159,8 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
         return this.months;
     }
 
-    private fetchSelectedEducation(educationId: string): void {
-        this.educationService.fetchEducation(educationId)
+    private fetchSelectedEducation(candidateId: string, educationId: string): void {
+        this.educationService.fetchEducation(candidateId, educationId)
             .subscribe(
                 (value) => {
                     this.initializeForm(value);

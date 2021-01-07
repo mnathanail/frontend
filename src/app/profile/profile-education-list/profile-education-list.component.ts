@@ -9,30 +9,33 @@ import {CrudEventsModel} from '../../shared/enums/crud-events-model.enum';
 import {EducationModel} from './education-model';
 import {EducationService} from '../service/education/education.service';
 import {EducationMessagesService} from '../service/education/education-messages.service';
+import {ProfileAbstract} from '../abstract-profile';
 
 @Component({
   selector: 'app-profile-education-list',
   templateUrl: './profile-education-list.component.html',
   styleUrls: ['./profile-education-list.component.css']
 })
-export class ProfileEducationListComponent implements OnInit, OnDestroy {
+export class ProfileEducationListComponent extends ProfileAbstract implements OnInit, OnDestroy {
 
     educations: EducationModel[];
     sectionTitle = 'Education';
     private fetchSubscription = new Subscription();
     private educationMessagesSubscription = new Subscription();
     private destroy$ = new Subject<any>();
+    candidateId: string;
 
-
-    constructor(private router: Router,
-                private route: ActivatedRoute,
+    constructor(protected router: Router,
+                protected route: ActivatedRoute,
                 private educationService: EducationService,
                 private educationMessages: EducationMessagesService,
     ) {
+        super(router, route);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
-        this.fetchSubscription = this.educationService.fetchEducationList().subscribe(
+        this.fetchSubscription = this.educationService.fetchEducationList(this.candidateId).subscribe(
             (value) => {
                 this.educations = value;
             }

@@ -50,7 +50,7 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
     ) {
         super(config, modalService, router, route);
 
-        //platformLocation.onPopState(() => this.modalService.dismissAll());
+        // platformLocation.onPopState(() => this.modalService.dismissAll());
     }
 
     ngOnInit(): void {
@@ -100,7 +100,8 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
     }
 
     onSave(event): void {
-        this.subscription = this.profileService.setPhoto(this.result)
+        const candidateId = this.getCandidateId();
+        this.subscription = this.profileService.setPhoto(candidateId, this.result)
             .subscribe(
                 (value: ProfileModel) => {
                     this.profileMessages.setPhotoChanged(value.image);
@@ -138,7 +139,7 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
 
     isFileImage(file): boolean {
         const acceptedImageTypes = ['image/jpg', 'image/jpeg', 'image/png'];
-        return file && acceptedImageTypes.includes(file['type']);
+        return file && acceptedImageTypes.includes(file.type);
     }
 
     /*@HostListener('document:click', ['$event']) onClickOutside(event: MouseEvent): void {

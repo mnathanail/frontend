@@ -4,34 +4,38 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ProfileMessagesService} from './service/profile/profile-messages.service';
 import {Subscription} from 'rxjs';
 import {ProfileService} from './service/profile/profile.service';
-import {DomSanitizer} from '@angular/platform-browser';
 import {ProfileModel} from './profile-model';
+import {ProfileAbstract} from './abstract-profile';
 
 @Component({
     selector: 'app-profile',
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit, OnDestroy {
+export class ProfileComponent extends ProfileAbstract implements OnInit, OnDestroy {
 
     profilePic: string;
     coverPic: any = 'https://via.placeholder.com/468x60?text=%20';
     profilePicSubscription: Subscription;
     getProfileSubscription: Subscription;
-    results: any;
+    results: ProfileModel;
     loaded = false;
+    candidateId: string;
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
+    constructor(protected router: Router,
+                protected route: ActivatedRoute,
                 private modalService: NgbModal,
                 private profileService: ProfileService,
                 private profileMessages: ProfileMessagesService) {
+        super(router, route);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
-        this.getProfileSubscription = this.profileService.fetchProfile()
+        this.getProfileSubscription = this.profileService.fetchProfile(this.candidateId)
             .subscribe((value: ProfileModel) => {
                     this.results = value;
+                    console.log(value);
                     this.profilePic = value.image;
                     this.loaded = true;
                 }

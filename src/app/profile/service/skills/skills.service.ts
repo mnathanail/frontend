@@ -1,11 +1,9 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {SkillModel} from '../../profile-skill-list/profile-skill-item/skill-model';
 import {Endpoints} from '../../../endpoints/endpoints';
-import {SkillNode} from '../../profile-skill-list/profile-skill-item/skill-node';
 import {SkillEntityModel} from '../../profile-skill-list/profile-skill-item/skill-entity-model';
-import {JobModel} from '../../../jobs/job-model';
 
 @Injectable({providedIn: 'root'})
 export class SkillsService {
@@ -14,39 +12,50 @@ export class SkillsService {
     }
 
     fetchSkills(skill: string): Observable<SkillModel[]> {
-        const url = Endpoints.SKILL_GET_LIST.replace(':id', '1');
+        const url = Endpoints.SKILL_GET_LIST;
         return this.http.get<SkillModel[]>(url, {params: {name: skill}});
     }
 
-    fetchCandidateSkills(): Observable<SkillModel[]> {
-        const url = Endpoints.SKILL_CANDIDATE_GET_LIST.replace(':id', '1');
-        return this.http.get<SkillModel[]>(url);
+    fetchCandidateSkills(candidateId: string): Observable<SkillModel[]> {
+        const url = Endpoints.SKILL_CANDIDATE_GET_LIST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.get<SkillModel[]>(url, {params});
     }
 
-    saveSkill(skill: string): Observable<SkillModel> {
-        const url = Endpoints.SKILL_POST.replace(':id', '1');
-        return this.http.post<SkillModel>(url, {name: skill});
+    saveSkill(candidateId: string, skill: string): Observable<SkillModel> {
+        const url = Endpoints.SKILL_POST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.post<SkillModel>(url, {name: skill}, {params});
     }
 
-    saveSkillList(skills: SkillModel[]): Observable<SkillEntityModel[]> {
-        const url = Endpoints.SKILL_POST_LIST.replace(':id', '1');
-        return this.http.post<SkillEntityModel[]>(url, skills);
+    saveSkillList(candidateId: string, skills: SkillModel[]): Observable<SkillEntityModel[]> {
+        const url = Endpoints.SKILL_POST_LIST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.post<SkillEntityModel[]>(url, skills, {params});
     }
 
-    saveCandidateSkillList(skills: SkillModel[]): Observable<SkillModel[]> {
-        const url = Endpoints.SKILL_CANDIDATE_SAVE_LIST.replace(':id', '1');
-        return this.http.post<SkillModel[]>(url, skills);
+    saveCandidateSkillList(candidateId: string, skills: SkillModel[]): Observable<SkillModel[]> {
+        const url = Endpoints.SKILL_CANDIDATE_SAVE_LIST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.post<SkillModel[]>(url, skills, {params});
     }
 
-    updateSkills(skills: SkillModel[]): Observable<SkillModel[]> {
-        const url = Endpoints.SKILL_PATCH_LIST.replace(':id', '1');
-        return this.http.patch<SkillModel[]>(url, skills);
+    updateSkills(candidateId: string, skills: SkillModel[]): Observable<SkillModel[]> {
+        const url = Endpoints.SKILL_PATCH_LIST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.patch<SkillModel[]>(url, skills, {params});
     }
 
-    deleteSkill(skillUuid: string): Observable<boolean> {
-        const url = Endpoints.SKILL_CANDIDATE_DELETE
-        .replace(':id', '1')
-        .replace(':skillUuid', skillUuid);
-        return this.http.delete<boolean>(url);
+    deleteSkill(candidateId: string, skillUuid: string): Observable<boolean> {
+        const url = Endpoints.SKILL_CANDIDATE_DELETE;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('skillUuid', skillUuid);
+        return this.http.delete<boolean>(url, {params});
     }
 }

@@ -16,7 +16,7 @@ export class JobSearchItemComponent implements OnInit, OnDestroy {
 
     constructor(private jobService: JobService) {
     }
-    
+
     ngOnInit(): void {
     }
 

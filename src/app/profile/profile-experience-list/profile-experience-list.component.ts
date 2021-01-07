@@ -6,29 +6,35 @@ import {ExperienceMessagesService} from '../service/experience/experience-messag
 import {Subject, Subscription} from 'rxjs';
 import {CrudEventsModel} from '../../shared/enums/crud-events-model.enum';
 import {delay, takeUntil} from 'rxjs/operators';
+import {ProfileAbstract} from '../abstract-profile';
 
 @Component({
     selector: 'app-profile-experience-list',
     templateUrl: './profile-experience-list.component.html',
     styleUrls: ['./profile-experience-list.component.css']
 })
-export class ProfileExperienceListComponent implements OnInit, OnDestroy {
+export class ProfileExperienceListComponent extends ProfileAbstract implements OnInit, OnDestroy {
 
     jobs: ExperienceModel[];
     private fetchSubscription = new Subscription();
     private experienceMessagesSubscription = new Subscription();
     private destroy$ = new Subject<any>();
+    candidateId: string;
 
-
-    constructor(private router: Router,
-                private route: ActivatedRoute,
+    constructor(protected router: Router,
+                protected route: ActivatedRoute,
                 private experienceService: ExperienceService,
                 private experienceMessages: ExperienceMessagesService,
     ) {
+        super(router, route);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
-        this.fetchSubscription = this.experienceService.fetchExperienceList().subscribe(
+        this.fetchSubscription = this.experienceService
+            .fetchExperienceList(this.candidateId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
             (value) => {
                 this.jobs = value;
             }

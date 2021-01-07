@@ -24,24 +24,15 @@
                         <div class="row d-flex align-items-center">
                             <div
                                 class="col-xl-4 col-md-4 d-flex justify-content-lg-start justify-content-md-start justify-content-center">
-                                <ul>
-                                    <li>
-                                        <div class="counter">246</div>
-                                        <div class="heading">Friends</div>
-                                    </li>
-                                    <li>
-                                        <div class="counter">30</div>
-                                        <div class="heading">Online</div>
-                                    </li>
-                                    <li>
-                                        <div class="counter">216</div>
-                                        <div class="heading">Offline</div>
-                                    </li>
-                                </ul>
+                                what about a quote?
                             </div>
                             <div class="col-xl-4 col-md-4 d-flex justify-content-center">
                                 <div class="image-default">
-                                    <img class="rounded-circle img-fluid" *ngIf="loaded" [src]="profilePic" alt="...">
+
+                                    <img class="rounded-circle img-fluid img-thumbnail" *ngIf="loaded && results?.image; else emptyImage;" [src]="results?.image">
+                                    <ng-template #emptyImage>
+                                        <img class="rounded-circle img-fluid img-thumbnail">
+                                    </ng-template>
 
                                 <a (click)="profilePhotoAction()">
                                     <div class="svgContainer">
@@ -62,7 +53,7 @@
                                             appDropdown #ref="appDropdown">
                                         Add / Edit Profile Section
                                     </button>
-                                    <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" [ngClass]="{'show':ref.toggle}">
+                                    <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" [ngClass]="{'show':ref.getToggle}">
                                         <a class="dropdown-item" (click)="profilePhotoAction()">Profile photo</a>
                                         <a class="dropdown-item" (click)="introAction()">Summary</a>
                                         <a class="dropdown-item" (click)="workExperienceAction()">Work Experience</a>
@@ -78,9 +69,9 @@
         </div>
     </div>
 </div>
-<!--<app-profile-experience-list></app-profile-experience-list>-->
+<!--<app-profile-experience-list></app-profile-experience-list>  -->
 
-<app-profile-summary></app-profile-summary>
+<app-profile-summary ></app-profile-summary>
 <app-profile-experience-list></app-profile-experience-list>
 <app-profile-education-list></app-profile-education-list>
 <app-profile-skill-list></app-profile-skill-list>

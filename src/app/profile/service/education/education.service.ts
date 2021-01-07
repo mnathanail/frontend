@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Endpoints} from '../../../endpoints/endpoints';
 import {EducationModel} from '../../profile-education-list/education-model';
@@ -10,35 +10,42 @@ export class EducationService {
     constructor(private http: HttpClient) {
     }
 
-    fetchEducationList(): Observable<EducationModel[]> {
-        const url = Endpoints.EDUCATION_LIST_GET.replace(':id', '1');
-        return this.http.get<EducationModel[]>(url);
+    fetchEducationList(candidateId: string): Observable<EducationModel[]> {
+        const url = Endpoints.EDUCATION_LIST_GET;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.get<EducationModel[]>(url, {params});
     }
 
-    fetchEducation(educationId: string): Observable<EducationModel> {
-        const url = Endpoints.EDUCATION_GET
-            .replace(':id', '1')
-            .replace(':educationId', educationId);
-        return this.http.get<EducationModel>(url);
+    fetchEducation(candidateId: string, educationId: string): Observable<EducationModel> {
+        const url = Endpoints.EDUCATION_GET;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('educationId', educationId);
+        return this.http.get<EducationModel>(url, {params});
     }
 
-    setEducation(educationModel: EducationModel): Observable<EducationModel> {
-        const url = Endpoints.EDUCATION_SAVE.replace(':id', '1');
-        return this.http.post<EducationModel>(url, educationModel);
+    setEducation(candidateId: string, educationModel: EducationModel): Observable<EducationModel> {
+        const url = Endpoints.EDUCATION_SAVE;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.post<EducationModel>(url, educationModel, {params});
     }
 
-    patchEducation(educationModel: EducationModel, educationId: string): Observable<EducationModel> {
-        const url = Endpoints.EDUCATION_PATCH
-            .replace(':id', '1')
-            .replace(':educationId', String(educationId));
-        return this.http.patch<EducationModel>(url, educationModel);
+    patchEducation(educationModel: EducationModel, candidateId: string,  educationId: string): Observable<EducationModel> {
+        const url = Endpoints.EDUCATION_PATCH;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('educationId', educationId);
+        return this.http.patch<EducationModel>(url, educationModel, {params});
     }
 
-    deleteEducatione(educationId: string): Observable<boolean> {
-        const url = Endpoints.EDUCATION_DELETE
-            .replace(':id', '1')
-            .replace(':educationId', educationId);
-        return this.http.delete<boolean>(url);
+    deleteEducatione(candidateId: string, educationId: string): Observable<boolean> {
+        const url = Endpoints.EDUCATION_DELETE;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('educationId', educationId);
+        return this.http.delete<boolean>(url, {params});
     }
 
 }

@@ -1,13 +1,20 @@
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Directive, ElementRef, HostListener} from '@angular/core';
+import {Directive, ElementRef, HostListener, OnDestroy} from '@angular/core';
 
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
-export abstract class ProfileAbstractEdit {
+export abstract class ProfileAbstractEdit implements OnDestroy {
 
     private readonly expId: string;
     private readonly eduId: string;
+
+    /*
+        subs = new SubSink();
+    * https://blog.angulartraining.com/how-to-automatically-unsubscribe-your-rxjs-observables-tutorial-2f98b0560298
+    **/
+
+
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
                 protected router: Router,
@@ -25,7 +32,7 @@ export abstract class ProfileAbstractEdit {
 
     @HostListener('document:click', ['$event', '$event.target'])
     onClickOutside(event: MouseEvent, targetElement: HTMLElement): void {
-        //event.target === this.content.elementRef.nativeElement && this.modalService.hasOpenModals()
+        // event.target === this.content.elementRef.nativeElement && this.modalService.hasOpenModals()
         if (targetElement === event.target) {
             return;
         }
@@ -48,21 +55,24 @@ export abstract class ProfileAbstractEdit {
         }, 500);
     }
 
-    getExperienceId(): string{
-        return this.route.snapshot.params.expId;
+    getExperienceId(): string {
+        return this.route.parent.snapshot.params.expId;
     }
 
-    getEducationId(): string{
-        return this.route.snapshot.params.eduId;
+    getEducationId(): string {
+        return this.route.parent.snapshot.params.eduId;
     }
 
-    getCandidateId(): string{
-        return this.route.snapshot.params.id;
+    getCandidateId(): string {
+        return this.route.parent.snapshot.params.id;
     }
 
-    delayedModalClose(): void{
+    delayedModalClose(): void {
         setTimeout(() => {
             this.onClose();
         }, 500);
+    }
+
+    ngOnDestroy(): void {
     }
 }

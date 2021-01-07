@@ -13,13 +13,14 @@ import {JobsComponent} from '../jobs/jobs.component';
 import {JobPostingComponent} from '../jobs/job-posting/job-posting.component';
 import {JobViewComponent} from '../jobs/job-view/job-view.component';
 import {JobSearchListComponent} from '../jobs/job-search-list/job-search-list.component';
+import {CanActivateAuthenticationGuard as authenticationGuard} from '../guard/can-activate-authentication.guard';
+import {CanActivateAuthorizationGuard as authorizationGuard} from '../guard/can-activate-authorization.guard';
 
 const appRouting: Routes = [
-    {path: '', redirectTo: 'profile/:id', pathMatch: 'full'},
     {path: 'login', component: LoginComponent},
     {path: 'register', component: RegisterComponent},
     {
-        path: 'profile/:id', component: ProfileComponent,
+        path: 'profile/:id', component: ProfileComponent, canActivate: [authenticationGuard],
         children: [
             {path: 'edit/edit-photo-profile', component: ProfileEditPhotoComponent, canDeactivate: [CanDeactivateGuard]},
             {path: 'edit/edit-intro-profile', component: ProfileEditSummaryComponent},
@@ -37,9 +38,12 @@ const appRouting: Routes = [
             {path: 'job-search', component: JobSearchListComponent}
         ]
     },
-    {path: 'job-posting', component: JobPostingComponent},
+    {path: 'job-posting', component: JobPostingComponent, canActivate: [authorizationGuard], data: {authorities: ['RECRUITER']}},
     {path: 'job-update/edit/:jobId', component: JobPostingComponent},
     {path: 'job-view/:jobId', component: JobViewComponent},
+    {path: '', redirectTo: 'profile/:id', pathMatch: 'full'},
+    { path: '**', redirectTo: '' }
+
 ];
 
 @NgModule({

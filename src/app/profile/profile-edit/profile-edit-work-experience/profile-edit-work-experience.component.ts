@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup} from '@angular/forms';
 import {monthNames} from '../../../shared/months';
 import {ExperienceMessagesService} from '../../service/experience/experience-messages.service';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {ExperienceModel} from '../../profile-experience-list/experience-model';
 import {ExperienceImpl} from '../../profile-experience-list/experience-impl';
 import {ExperienceService} from '../../service/experience/experience.service';
@@ -13,6 +13,7 @@ import {HttpClient} from '@angular/common/http';
 import {LoaderService} from '../../../shared/loader/service/loader.service';
 import {FormsMethods} from '../../../shared/forms/forms-methods';
 import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-profile-edit-work-experience',
@@ -27,9 +28,11 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     editState = false;
     editExperienceForm: FormGroup;
     toggleChecked = false;
-    private title: string;
+    candidateId: string;
+    title: string;
     private subscription = new Subscription();
     private crudSubscription = new Subscription();
+    private destroy$ = new Subject();
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -41,14 +44,16 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 private experienceMessages: ExperienceMessagesService,
     ) {
         super(config, modalService, router, route);
+        this.candidateId = this.getCandidateId();
         this.initializeForm(new ExperienceImpl());
     }
 
     ngOnInit(): void {
         this.editState = this.router.url.indexOf('edit') > 0;
-        const experienceId = this.route.snapshot.params.expId;
+
         if (this.editState) {
-            this.fetchSelectedExperience(experienceId);
+            const experienceId = this.getExperienceId();
+            this.fetchSelectedExperience(this.candidateId, experienceId);
         }
         this.title = this.editState === true ? 'Edit Experience' : 'Add Experience';
         this._populateSelectYears();
@@ -66,13 +71,15 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 
     onSubmit(): void {
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
             const experienceId = this.editExperienceForm.get('experienceId').value;
-            this.experienceService.patchExperience(a as ExperienceModel, experienceId)
+            this.experienceService.patchExperience(a as ExperienceModel, this.candidateId, experienceId)
                 /*.filter(delay(500))*/
                 .subscribe((value) => {
                         this.experienceMessages.setExperienceChanged({type: CrudEventsModel.UPDATE, data: value});
@@ -85,7 +92,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                     }
                 );
         } else {
-            this.experienceService.setExperience(this.editExperienceForm.value)
+            this.experienceService.setExperience(this.candidateId, this.editExperienceForm.value)
                 /*.filter(delay(500))*/
                 .subscribe(
                     (value) => {
@@ -102,7 +109,8 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     }
 
     deleteExperienceItem(experienceId: string): void {
-        this.experienceService.deleteExperience(experienceId)
+        this.experienceService.deleteExperience(this.candidateId, experienceId)
+            .pipe(takeUntil(this.destroy$))
             .subscribe((value) => {
                     if (value === true) {
                         this.experienceMessages.setExperienceChanged({type: CrudEventsModel.DELETE, data: this.editExperienceForm.value});
@@ -150,8 +158,8 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
         return this.months;
     }
 
-    private fetchSelectedExperience(experienceId: string): void {
-        this.experienceService.fetchExperience(experienceId)
+    private fetchSelectedExperience(candidateId: string, experienceId: string): void {
+        this.experienceService.fetchExperience(candidateId, experienceId)
             .subscribe(
                 (value) => {
                     this.initializeForm(value);

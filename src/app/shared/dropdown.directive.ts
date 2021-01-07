@@ -6,24 +6,24 @@ import {Directive, ElementRef, HostListener} from '@angular/core';
 })
 export class DropdownDirective {
 
-    private _toggle = false;
+    private toggle = false;
 
     constructor(private element: ElementRef) {
     }
 
+    get getToggle(): boolean {
+        return this.toggle;
+    }
+
     @HostListener('click', ['$event']) toggleDropdown(event: Event): void {
-        this._toggle = !this._toggle;
+        this.toggle = !this.toggle;
 
     }
 
-    @HostListener('document:click', ['$event']) takis(event: Event): void{
+    @HostListener('document:click', ['$event']) takis(event: Event): void {
         const targetElement = event.target as HTMLElement;
-        if (targetElement && !this.element.nativeElement.contains(targetElement) && this._toggle === true){
-            this._toggle = false;
+        if (targetElement && !this.element.nativeElement.contains(targetElement) && this.toggle === true) {
+            this.toggle = false;
         }
-    }
-
-    get toggle(): boolean {
-        return this._toggle;
     }
 }

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Observable, of, Subject} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {SkillModel} from '../profile/profile-skill-list/profile-skill-item/skill-model';
 import {JobService} from './service/job.service';
 import {SkillsService} from '../profile/service/skills/skills.service';
@@ -30,24 +30,24 @@ export class JobsComponent implements OnInit, OnDestroy {
     onEnter(value: any): void {
         const params = value.split(',').map(e => e.trim());
         const options = {queryParams: {keywords: params}};
-        this.router.navigate(['jobs/job-search'], options)
-            /*.then(
-                v => {
-                    this.jobService.getJobsForCandidateDependingOnSkillArray(params)
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe(
-                            (val) => {
-                                console.log(val);
-                            },
-                            error => {
-                                console.log(error);
-                            },
-                            () => {
-                                console.log('Completed!');
-                            }
-                        );
-                }
-            );*/
+        this.router.navigate(['jobs/job-search'], options);
+        /*.then(
+            v => {
+                this.jobService.getJobsForCandidateDependingOnSkillArray(params)
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(
+                        (val) => {
+                            console.log(val);
+                        },
+                        error => {
+                            console.log(error);
+                        },
+                        () => {
+                            console.log('Completed!');
+                        }
+                    );
+            }
+        );*/
     }
 
     addParameters(skill: string, yoe: number): void {
@@ -78,7 +78,7 @@ export class JobsComponent implements OnInit, OnDestroy {
             tap(x => {
                 this.searching = false;
             })
-        );
+        )
 
     formatMatches = (x: { name: string }) => x.name;
 

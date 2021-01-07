@@ -38,6 +38,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     private getValues: { type: CrudEventsModel; data: SkillModel[] };
     private destroy$ = new Subject<any>();
     searchTerm = '';
+    candidateId: string;
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -50,7 +51,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 private skillStateService: SkillsStateService,
     ) {
         super(config, modalService, router, route);
-
+        this.candidateId = this.getCandidateId();
         this.skillStateService.getSkillStateChanged()
             .pipe(takeUntil(this.destroy$))
             .subscribe(
@@ -124,7 +125,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         let finalSkillList = [];
 
         if (unsavedSkills.length > 0) {
-            this.skillService.saveSkillList(unsavedSkills)
+            this.skillService.saveSkillList(this.candidateId, unsavedSkills)
                 .pipe(
                     concatMap((result) => {
                         result.forEach(value => {
@@ -137,7 +138,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                                 value.entityId = value.id;
                                 return value;
                             });
-                        return this.skillService.saveCandidateSkillList(finalSkillList);
+                        return this.skillService.saveCandidateSkillList(this.candidateId, finalSkillList);
                     })
                 )
                 .subscribe(
@@ -156,7 +157,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 value.entityId = value.id;
                 return value;
             });
-            this.skillService.saveCandidateSkillList(finalSkillList)
+            this.skillService.saveCandidateSkillList(this.candidateId, finalSkillList)
                 .subscribe(
                     (value) => {
                         this.skillMessages.setSkillChanged({type: CrudEventsModel.POST, data: value});
@@ -193,7 +194,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
             tap(x => {
                 this.searching = false;
             })
-        );
+        )
 
     formatMatches = (x: { name: string }) => x.name;
 
@@ -205,7 +206,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     removeSkill(id: number, skillUuid: string): void {
         const skills = this.editSkillsForm.get('editSkills') as FormArray;
 
-        this.skillService.deleteSkill(skillUuid)
+        this.skillService.deleteSkill(this.candidateId, skillUuid)
             .subscribe(
                 (value) => {
                     if (value) {
@@ -237,7 +238,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         });
 
         if (changed.length > 0) {
-            this.skillService.updateSkills(changed)
+            this.skillService.updateSkills(this.candidateId, changed)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {

@@ -155,7 +155,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             tap(x => {
                 this.searching = false;
             })
-        );
+        )
 
     formatMatches = (x: { name: string }) => x.name;
 
