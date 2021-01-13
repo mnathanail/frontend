@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Observable, of, Subject} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {SkillModel} from '../profile/profile-skill-list/profile-skill-item/skill-model';
 import {JobService} from './service/job.service';
 import {SkillsService} from '../profile/service/skills/skills.service';
@@ -29,7 +29,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     onEnter(value: any): void {
         const params = value.split(',').map(e => e.trim());
-        const options = {queryParams: {keywords: params}};
+        const options = {queryParams: {keywords: params, page: 0}};
         this.router.navigate(['jobs/job-search'], options);
         /*.then(
             v => {
@@ -77,7 +77,8 @@ export class JobsComponent implements OnInit, OnDestroy {
             ),
             tap(x => {
                 this.searching = false;
-            })
+            }),
+            takeUntil(this.destroy$)
         )
 
     formatMatches = (x: { name: string }) => x.name;

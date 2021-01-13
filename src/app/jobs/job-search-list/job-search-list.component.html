@@ -20,6 +20,15 @@
         <app-job-search-item *ngIf="selectedJob" [jobItem]=selectedJob>
         </app-job-search-item>
     </div>
+
+    <br>
+    <ngb-pagination
+        [pageSize]="page.pageSize"
+        [collectionSize]="collectionSize"
+
+        [(page)]="thePageNumber"
+        (pageChange)="updatePage()">
+    </ngb-pagination>
 </div>
 
 <ng-template #nothingFound>

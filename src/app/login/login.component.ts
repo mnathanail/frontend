@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {LoginService} from './service/login.service';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {LoaderService} from '../shared/loader/service/loader.service';
 import {Router} from '@angular/router';
 import {TokenStorageService} from '../shared/service/token-storage.service';
+import {delay, take, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-login',
@@ -13,13 +14,13 @@ import {TokenStorageService} from '../shared/service/token-storage.service';
 })
 export class LoginComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;
-    proceedToApp: Subscription;
+    submitted = false;
+    private destroy$ = new Subject();
 
     constructor(private loginService: LoginService,
                 private loaderService: LoaderService,
                 private router: Router,
                 private tokenService: TokenStorageService) {
-
     }
 
     ngOnInit(): void {
@@ -31,22 +32,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     onLogin(): void {
+        this.submitted = true;
+        console.log(this.loginForm.valid);
+
         if (this.loginForm.valid) {
             this.loaderService.showLoader();
-            this.proceedToApp = this.loginService.onLogin(this.loginForm.value)
-                // .filter(delay(3000))
+            this.loginService.onLogin(this.loginForm.value)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (data) => {
                         if (data.headers != null && data.body != null && data.ok) {
 
                             const token = data.headers.get('Authorization');
                             this.tokenService.saveToken(token);
+                            this.tokenService.saveUser(data.body);
                             setTimeout(() => {
-                                this.router.navigate([`profile/${data.body.id}`]);
+                                this.router.navigate([`profile/${data.body.id}`])
                             }, 500);
                         }
                     },
                     error => {
+                        console.log(error);
                     },
                     () => {
                         console.log('Completed!');
@@ -57,9 +63,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
     }
 
+    get f(): { [p: string]: AbstractControl } { return this.loginForm.controls; }
+
     ngOnDestroy(): void {
-        if (this.proceedToApp) {
-            this.proceedToApp.unsubscribe();
-        }
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 }

@@ -1,14 +1,16 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable, Subject, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {catchError, takeUntil} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
     private destroy$ = new Subject();
 
-    constructor(private router: Router) {
+    constructor(private router: Router,
+                private tokenService: TokenStorageService) {
     }
 
 
@@ -27,7 +29,10 @@ export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
                     console.log(error);
                     if (error.status === 401 || error.status === 403) {
                         // clear sessionStorage
-                        // window.location.reload(true);
+                        this.router.navigate(['/login'], {skipLocationChange: true})
+                            .then((value) => {
+                                this.tokenService.emptyStorage();
+                            });
                     }
                     return throwError(errorMessage);
                 })

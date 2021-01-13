@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card">
             <h5 class="card-header"><span>Skills</span>
-                <span class="float-right mr-1">
+                <span class="float-right mr-1" *ngIf="isOwner">
                     <a (click)="onAddSkill()">
                         <i class="bi bi-plus-circle"></i>
                     </a>
@@ -14,7 +14,7 @@
                 <!--*ngIf="education.length>0;"-->
                 <div class="row mb-1">
                     <div class="col-6"><div class="float-left">Total skills: ({{skills?.length}})</div></div>
-                    <div class="col-6">
+                    <div class="col-6" *ngIf="isOwner">
                         <div class="float-right">
                             <small class="edit-education pr-4" (click)="onEditSkills()">
                                 <i class="bi bi-pencil"></i>

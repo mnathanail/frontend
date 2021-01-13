@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {monthNames} from '../../../shared/months';
 import {ExperienceMessagesService} from '../../service/experience/experience-messages.service';
 import {Subject, Subscription} from 'rxjs';
@@ -14,6 +14,7 @@ import {LoaderService} from '../../../shared/loader/service/loader.service';
 import {FormsMethods} from '../../../shared/forms/forms-methods';
 import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 import {takeUntil} from 'rxjs/operators';
+import {DateLessThan} from '../../../shared/forms/validator/custom-validator';
 
 @Component({
     selector: 'app-profile-edit-work-experience',
@@ -30,9 +31,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     toggleChecked = false;
     candidateId: string;
     title: string;
-    private subscription = new Subscription();
-    private crudSubscription = new Subscription();
-    private destroy$ = new Subject();
+    submitted = false;
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -67,20 +66,36 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     isCurrentChecked(): void {
         this.toggleChecked = !this.toggleChecked;
+        if (this.toggleChecked) {
+            this.editExperienceForm.get('period.endYear').setValue(null);
+            this.editExperienceForm.get('period.endMonth').setValue(null);
+        } else {
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            this.editExperienceForm.get('period.endYear').setValue(currentYear);
+            this.editExperienceForm.get('period.endMonth').setValue(currentMonth);
+        }
+
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
         this.destroy$.next();
         this.destroy$.unsubscribe();
     }
 
-    onSubmit(): void {
+    get f(): { [p: string]: AbstractControl } { return this.editExperienceForm.controls; }
+
+    onSubmit(): void | boolean{
+        this.submitted = true;
+        console.log(this.editExperienceForm);
+
+        return false;
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
             const experienceId = this.editExperienceForm.get('experienceId').value;
             this.experienceService.patchExperience(a as ExperienceModel, this.candidateId, experienceId)
                 /*.filter(delay(500))*/
+                .pipe(takeUntil(this.destroy$))
                 .subscribe((value) => {
                         this.experienceMessages.setExperienceChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
@@ -93,6 +108,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                 );
         } else {
             this.experienceService.setExperience(this.candidateId, this.editExperienceForm.value)
+                .pipe(takeUntil(this.destroy$))
                 /*.filter(delay(500))*/
                 .subscribe(
                     (value) => {
@@ -127,16 +143,16 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     private initializeForm(value: ExperienceModel): void {
         this.editExperienceForm = new FormGroup({
-            jobTitle: new FormControl(value.jobTitle),
-            companyName: new FormControl(value.companyName),
+            jobTitle: new FormControl(value.jobTitle, Validators.required),
+            companyName: new FormControl(value.companyName, Validators.required),
             industry: new FormControl(value.industry),
-            description: new FormControl(value.description),
+            description: new FormControl(value.description, Validators.required),
             period: new FormGroup({
                 startYear: new FormControl(value.period?.startYear),
                 startMonth: new FormControl(value.period?.startMonth),
                 endYear: new FormControl(value.period?.endYear),
                 endMonth: new FormControl(value.period?.endMonth)
-            }),
+            }, {validators: DateLessThan('startYear', 'endYear')}),
             isCurrent: new FormControl(value.isCurrent),
             experienceId: new FormControl(value.experienceId)
         });
@@ -145,7 +161,7 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
     private _populateSelectYears(): any[] {
         const year = new Date().getFullYear();
         const current = year;
-        for (let i = 1960; i <= year; i++) {
+        for (let i = 1980; i <= year; i++) {
             this.years.push(i);
         }
         return this.years.reverse();
@@ -160,10 +176,12 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     private fetchSelectedExperience(candidateId: string, experienceId: string): void {
         this.experienceService.fetchExperience(candidateId, experienceId)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
                     this.initializeForm(value);
                 }
             );
     }
+
 }

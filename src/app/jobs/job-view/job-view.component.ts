@@ -4,7 +4,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {JobModel} from '../job-model';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {errorObject} from 'rxjs/internal-compatibility';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
+import {ProfileModel} from '../../profile/profile-model';
 
 @Component({
     selector: 'app-job-view',
@@ -14,11 +15,17 @@ import {errorObject} from 'rxjs/internal-compatibility';
 export class JobViewComponent implements OnInit, OnDestroy {
 
     jobValue: JobModel;
+    ownsJob = false;
+    user: ProfileModel;
     private destroy$ = new Subject<any>();
 
     constructor(private activeRoute: ActivatedRoute,
                 private router: Router,
-                private jobService: JobService) {
+                private jobService: JobService,
+                private tokenService: TokenStorageService) {
+
+        this.user = (tokenService.getUser() as ProfileModel);
+
     }
 
     ngOnInit(): void {
@@ -29,6 +36,14 @@ export class JobViewComponent implements OnInit, OnDestroy {
                 (value) => {
                     console.log(value);
                     this.jobValue = value;
+                }
+            );
+
+        this.jobService.getRecruiterIdByJobId(jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    this.ownsJob = value === this.user.id.toString();
                 }
             );
     }

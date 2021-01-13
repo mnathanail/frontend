@@ -12,5 +12,8 @@
 </ul>
 
 
-<button class="btn btn-danger mr-1" (click)="deleteJob(jobValue?.jobId)">Delete</button>
-<button class="btn btn-info ml-1" (click)="updateJob(jobValue?.jobId)">Update</button>
+<div *ngIf="ownsJob">
+    <button class="btn btn-danger mr-1" (click)="deleteJob(jobValue?.jobId)">Delete</button>
+    <button class="btn btn-info ml-1" (click)="updateJob(jobValue?.jobId)">Update</button>
+</div>
+

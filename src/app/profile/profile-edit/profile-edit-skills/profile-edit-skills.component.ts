@@ -36,7 +36,6 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
     private subscription = new Subscription();
     private crudSubscription = new Subscription();
     private getValues: { type: CrudEventsModel; data: SkillModel[] };
-    private destroy$ = new Subject<any>();
     searchTerm = '';
     candidateId: string;
 
@@ -60,7 +59,9 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 });
 
         this.editState = this.router.url.indexOf('edit') > 0;
-        this.skillMessages.getSkillChanged().subscribe(value => this.getValues = value);
+        this.skillMessages.getSkillChanged()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => this.getValues = value);
 
         /*        this.skillService.fetchCandidateSkills()
                     .filter(
@@ -139,7 +140,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                                 return value;
                             });
                         return this.skillService.saveCandidateSkillList(this.candidateId, finalSkillList);
-                    })
+                    }), takeUntil(this.destroy$)
                 )
                 .subscribe(
                     (value) => {
@@ -158,6 +159,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 return value;
             });
             this.skillService.saveCandidateSkillList(this.candidateId, finalSkillList)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
                         this.skillMessages.setSkillChanged({type: CrudEventsModel.POST, data: value});
@@ -193,7 +195,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
             ),
             tap(x => {
                 this.searching = false;
-            })
+            }), takeUntil(this.destroy$)
         )
 
     formatMatches = (x: { name: string }) => x.name;
@@ -207,6 +209,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
         const skills = this.editSkillsForm.get('editSkills') as FormArray;
 
         this.skillService.deleteSkill(this.candidateId, skillUuid)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
                     if (value) {

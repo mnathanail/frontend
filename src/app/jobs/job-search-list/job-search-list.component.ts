@@ -6,6 +6,7 @@ import {SkillsService} from '../../profile/service/skills/skills.service';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {JobModel} from '../job-model';
+import {Pageable} from '../../shared/models/pageable';
 
 @Component({
     selector: 'app-job-search-list',
@@ -18,9 +19,13 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
     loaded = false;
     selectedJob: JobModel;
     selectedItem: any;
+    page: Pageable;
+    collectionSize: number;
 
     private destroy$ = new Subject<any>();
     isActive = false;
+    thePageNumber = 1;
+
     constructor(private jobService: JobService,
                 private activeRoute: ActivatedRoute,
                 private router: Router,
@@ -28,25 +33,38 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.activeRoute.queryParams.subscribe(params => {
-            this.jobService.getJobsForCandidateDependingOnSkillArray(params.keywords)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(
-                    (val) => {
-                        this.jobModel = val;
-                        this.loaded = true;
-                        this.selectedJob = val[0];
-                        this.selectedItem =  val[0];
-                    },
-                    error => {
-                        console.log(error);
-                    },
-                    () => {
-                        console.log('Completed!');
-                    }
-                );
-        });
+        this.getJobs();
     }
+
+    updatePage(): void{
+        this.getJobs();
+    }
+
+    getJobs(): void{
+        this.activeRoute.queryParams
+            .subscribe(params => {
+                this.jobService.getJobsForCandidateDependingOnSkillArray(params.keywords, this.thePageNumber.toString())
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(
+                        (val) => {
+                            this.jobModel = val.content;
+                            this.loaded = true;
+                            this.selectedJob = val.content[0];
+                            this.selectedItem = val.content[0];
+                            this.page = val.pageable;
+                            this.collectionSize = val.totalElements;
+                            console.log(val);
+                        },
+                        error => {
+                            console.log(error);
+                        },
+                        () => {
+                            console.log('Completed!');
+                        }
+                    );
+            });
+    }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.unsubscribe();

@@ -20,7 +20,7 @@ export class DropdownDirective {
 
     }
 
-    @HostListener('document:click', ['$event']) takis(event: Event): void {
+    @HostListener('document:click', ['$event']) toggleMethod(event: Event): void {
         const targetElement = event.target as HTMLElement;
         if (targetElement && !this.element.nativeElement.contains(targetElement) && this.toggle === true) {
             this.toggle = false;

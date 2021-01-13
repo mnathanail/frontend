@@ -10,13 +10,20 @@
 
             <div class="form-group">
                 <label for="editExperienceJobTitle">Job Title</label>
-                <input type="text" class="form-control" id="editExperienceJobTitle" formControlName="jobTitle"
-                       placeholder="Job Title">
+                <input type="text" class="form-control" id="editExperienceJobTitle" formControlName="jobTitle" placeholder="Job Title"
+                       [ngClass]="{ 'is-invalid': submitted && f.jobTitle.errors }" />
+                <div *ngIf="submitted && f.jobTitle.invalid" class="invalid-feedback">
+                    <div *ngIf="f.jobTitle.errors.required">First Name is required</div>
+                </div>
             </div>
+
             <div class="form-group">
                 <label for="editExperienceCompanyName">Company Name</label>
                 <input type="text" class="form-control" id="editExperienceCompanyName" formControlName="companyName"
-                       placeholder="Company Name">
+                       placeholder="Company Name" [ngClass]="{ 'is-invalid': submitted && editExperienceForm.get('companyName').invalid }">
+                <div *ngIf="submitted && f.companyName.invalid" class="invalid-feedback">
+                    <div *ngIf="f.companyName.errors.required">Company Name is required</div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="editExperienceIndustry">Industry</label>
@@ -55,15 +62,20 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="editExperienceEndYear">End Year</label>
-                                <select class="form-control" id="editExperienceEndYear" formControlName="endYear">
+                                <select class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.period.invalid }"
+                                        id="editExperienceEndYear" formControlName="endYear">
                                     <option *ngFor="let year of years;" value="{{year}}">{{year}}</option>
                                 </select>
+                                <div class="invalid-feedback text-nowrap " *ngIf="submitted && f.period.invalid">
+                                    <div *ngIf="submitted && f.period.errors?.dates">{{f.period.errors?.dates}}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="editExperienceEndMonth">End Month</label>
-                                <select class="form-control" id="editExperienceEndMonth" formControlName="endMonth">
+                                <select class="form-control"  id="editExperienceEndMonth" formControlName="endMonth">
                                     <option *ngFor="let month of months;"
                                             value="{{month.value}}">{{month.name}}</option>
                                 </select>
@@ -75,7 +87,10 @@
             <div class="form-group">
                 <label for="editExperienceDescription">Description</label>
                 <textarea class="form-control" formControlName="description" id="editExperienceDescription"
-                          rows="5"></textarea>
+                          rows="5" [ngClass]="{ 'is-invalid': submitted && editExperienceForm.get('description').invalid }"></textarea>
+                <div *ngIf="submitted && f.description.invalid" class="invalid-feedback">
+                    <div *ngIf="f.companyName.errors.required">Description is required</div>
+                </div>
             </div>
 
             <div class="form-group">

@@ -4,12 +4,13 @@ import {ExperienceModel} from '../profile-experience-list/experience-model';
 import {Subject, Subscription} from 'rxjs';
 import {ExperienceService} from '../service/experience/experience.service';
 import {ExperienceMessagesService} from '../service/experience/experience-messages.service';
-import {delay, takeUntil} from 'rxjs/operators';
+import {delay, take, takeUntil} from 'rxjs/operators';
 import {CrudEventsModel} from '../../shared/enums/crud-events-model.enum';
 import {EducationModel} from './education-model';
 import {EducationService} from '../service/education/education.service';
 import {EducationMessagesService} from '../service/education/education-messages.service';
 import {ProfileAbstract} from '../abstract-profile';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
 
 @Component({
   selector: 'app-profile-education-list',
@@ -20,32 +21,35 @@ export class ProfileEducationListComponent extends ProfileAbstract implements On
 
     educations: EducationModel[];
     sectionTitle = 'Education';
-    private fetchSubscription = new Subscription();
-    private educationMessagesSubscription = new Subscription();
     private destroy$ = new Subject<any>();
     candidateId: string;
+    isOwner = false;
 
     constructor(protected router: Router,
                 protected route: ActivatedRoute,
+                protected tokenService: TokenStorageService,
                 private educationService: EducationService,
                 private educationMessages: EducationMessagesService,
     ) {
-        super(router, route);
+        super(router, route, tokenService);
         this.candidateId = this.getCandidateId();
+        this.checkIfIsOwner();
     }
 
     ngOnInit(): void {
-        this.fetchSubscription = this.educationService.fetchEducationList(this.candidateId).subscribe(
+        this.educationService.fetchEducationList(this.candidateId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
             (value) => {
                 this.educations = value;
             }
         );
 
-        this.educationMessagesSubscription = this.educationMessages
+        this.educationMessages
             .getEducationChanged()
             .pipe(
                 takeUntil(this.destroy$),
-                delay(500)
+              //  delay(500)
             )
             .subscribe(
                 (value) => {
@@ -76,7 +80,7 @@ export class ProfileEducationListComponent extends ProfileAbstract implements On
                     }
                 },
                 error => {
-
+                    console.log(error);
                 },
                 () => {
 
@@ -89,8 +93,5 @@ export class ProfileEducationListComponent extends ProfileAbstract implements On
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.unsubscribe();
-        this.fetchSubscription.unsubscribe();
-        this.educationMessages.setEducationChangedComplete();
-        this.educationMessagesSubscription.unsubscribe();
     }
 }

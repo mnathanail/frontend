@@ -1,6 +1,8 @@
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Directive, ElementRef, HostListener, OnDestroy} from '@angular/core';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
@@ -8,7 +10,7 @@ export abstract class ProfileAbstractEdit implements OnDestroy {
 
     private readonly expId: string;
     private readonly eduId: string;
-
+    protected destroy$ = new Subject();
     /*
         subs = new SubSink();
     * https://blog.angulartraining.com/how-to-automatically-unsubscribe-your-rxjs-observables-tutorial-2f98b0560298
@@ -43,7 +45,9 @@ export abstract class ProfileAbstractEdit implements OnDestroy {
 
     onClose(): void {
         this.modalService.dismissAll();
-        this.route.parent.params.subscribe((param: Params) => {
+        this.route.parent.params
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((param: Params) => {
             const id = +param.id;
             this.router.navigate([`profile/${param.id}`]);
         });
@@ -74,5 +78,7 @@ export abstract class ProfileAbstractEdit implements OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 }

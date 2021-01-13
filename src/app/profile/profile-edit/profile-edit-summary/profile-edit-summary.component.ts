@@ -23,7 +23,6 @@ export class ProfileEditSummaryComponent extends ProfileAbstractEdit implements 
     summary = '';
     loaded = false;
     candidateId: string;
-    private destroy$ = new Subject();
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -69,7 +68,7 @@ export class ProfileEditSummaryComponent extends ProfileAbstractEdit implements 
         const returnedTarget = Object.assign(this.editSummaryForm.value, {id: this.getCandidateId()});
 
         return this.http.post(url, returnedTarget, {params})
-            .pipe(takeUntil(this.destroy$), delay(500))
+            .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value: SummaryModel) => {
                     this.summaryService.getMessages().setSummaryChanged(value);

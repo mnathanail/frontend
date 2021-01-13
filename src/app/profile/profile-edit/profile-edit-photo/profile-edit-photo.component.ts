@@ -19,6 +19,7 @@ import {ProfileMessagesService} from '../../service/profile/profile-messages.ser
 import {ProfileService} from '../../service/profile/profile.service';
 import {ProfileModel} from '../../profile-model';
 import {ProfileAbstractEdit} from '../profile-abstract-edit';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-profile-edit-photo',
@@ -102,6 +103,7 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
     onSave(event): void {
         const candidateId = this.getCandidateId();
         this.subscription = this.profileService.setPhoto(candidateId, this.result)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value: ProfileModel) => {
                     this.profileMessages.setPhotoChanged(value.image);
@@ -134,7 +136,8 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
 
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 
     isFileImage(file): boolean {

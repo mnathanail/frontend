@@ -5,14 +5,19 @@
             <div class="form-group">
                 <label for="loginEmail">Email address</label>
                 <input aria-describedby="emailHelp" class="form-control" id="loginEmail" type="email"
-                formControlName="username">
-                <div class="invalid-feedback">Please fill out this field.</div>
+                formControlName="username" [ngClass]="{ 'is-invalid': submitted && f.username.invalid }">
+                <div class="invalid-feedback" *ngIf="submitted && f.username.invalid">
+                    <div *ngIf="submitted && f.username.errors?.dates">Field is required</div>
+                    <div *ngIf="f.username.errors.email">Email must be a valid email address</div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="loginPassword">Password</label>
                 <input class="form-control" id="loginPassword" type="password"
-                formControlName="password">
-                <span class="invalid-feedback show">Please fill out this field.</span>
+                formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.invalid }">
+                <div class="invalid-feedback" *ngIf="submitted && f.username.invalid">
+                    <div *ngIf="submitted && f.username.errors?.dates">Field is required</div>
+                </div>
             </div>
             <button class="btn btn-primary mr-1" type="submit">Submit</button>
             <a class="btn btn-success" routerLink="/register" role="button">RegisterModel</a>

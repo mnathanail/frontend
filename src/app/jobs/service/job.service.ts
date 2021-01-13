@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Endpoints} from '../../endpoints/endpoints';
 import {JobModel} from '../job-model';
+import {PageableResponse} from '../../shared/models/pageable-response';
 
 @Injectable({
     providedIn: 'root'
@@ -64,8 +65,15 @@ export class JobService {
         return this.http.get<JobModel[]>(url);
     }
 
-    getJobsForCandidateDependingOnSkillArray(keywords: string[]): Observable<JobModel[]> {
+    getJobsForCandidateDependingOnSkillArray(keywords: string[], page?: string): Observable<PageableResponse<JobModel[]>> {
         const url = Endpoints.CANDIDATE_SEARCH_JOB_BY_KEYWORDS;
-        return this.http.get<JobModel[]>(url, {params: {keywords}});
+        return this.http.get<PageableResponse<JobModel[]>>(url, {params: {keywords, page}});
+    }
+
+    getRecruiterIdByJobId(jobId: string): Observable<string> {
+        const url = Endpoints.GET_RECRUITER_BY_JOB_ID;
+        const params = new HttpParams()
+            .set('jobId', jobId);
+        return this.http.get<string>(url, {params});
     }
 }

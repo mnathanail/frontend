@@ -32,6 +32,7 @@ import { JobPostingComponent } from './jobs/job-posting/job-posting.component';
 import { JobViewComponent } from './jobs/job-view/job-view.component';
 import { JobSearchListComponent } from './jobs/job-search-list/job-search-list.component';
 import { JobSearchItemComponent } from './jobs/job-search-list/job-search-item/job-search-item.component';
+import { LogoutComponent } from './logout/logout.component';
 
 @NgModule({
     declarations: [
@@ -61,6 +62,7 @@ import { JobSearchItemComponent } from './jobs/job-search-list/job-search-item/j
         JobViewComponent,
         JobSearchListComponent,
         JobSearchItemComponent,
+        LogoutComponent,
     ],
     imports: [
         BrowserModule,

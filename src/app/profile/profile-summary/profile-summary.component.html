@@ -9,7 +9,7 @@
                     <div class="col-11">
                         <p class="card-text">{{data?.summary}}</p>
                     </div>
-                    <div class="col-1">
+                    <div class="col-1" *ngIf="isOwner">
                         <small class="float-right" (click)="onAddOrEditSummary()">
                             <i class="bi bi-pencil"></i>
                         </small>

@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {SkillsService} from '../../profile/service/skills/skills.service';
@@ -19,6 +19,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     searchFailed = false;
     editState = false;
     loaded = false;
+    submitted = false;
     private destroy$ = new Subject<any>();
 
     constructor(
@@ -32,6 +33,10 @@ export class JobPostingComponent implements OnInit, OnDestroy {
 
     get requiredSkills(): FormArray {
         return this.jobPosting.get('requiredSkills') as FormArray;
+    }
+
+    get f(): { [p: string]: AbstractControl } {
+        return this.jobPosting.controls;
     }
 
     ngOnInit(): void {
@@ -55,10 +60,10 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     formInit(jobModel?: JobModel): void {
         const requiredSkillsArray = jobModel?.requiredSkills.map(e => this.createSkillsFormGroup(e));
         this.jobPosting = new FormGroup({
-            jobTitle: new FormControl(jobModel?.jobTitle || ''),
-            description: new FormControl(jobModel?.description || ''),
+            jobTitle: new FormControl(jobModel?.jobTitle || '', Validators.required),
+            description: new FormControl(jobModel?.description || '', Validators.required),
             skillExcluded: new FormControl(''),
-            requiredSkills: new FormArray(requiredSkillsArray || [])
+            requiredSkills: new FormArray(requiredSkillsArray || [], [Validators.required, Validators.minLength(1)])
         });
     }
 
@@ -78,9 +83,12 @@ export class JobPostingComponent implements OnInit, OnDestroy {
         }
     }
 
-    onSubmit(): void {
+    onSubmit(): void | boolean {
         delete this.jobPosting.value.skillExcluded;
 
+        this.submitted = true;
+        console.log(this.jobPosting);
+        return false;
         if (this.editState) {
             console.log(this.jobPosting.value);
             const jobId = this.activeRoute.snapshot.params.jobId;
@@ -139,23 +147,25 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             distinctUntilChanged(),
             tap(() => (this.searching = true)),
             switchMap(term =>
-                this.skillService.fetchSkills(term).pipe(
-                    map((response) => {
-                        return response.length > 0 ? response : [{id: null, name: term}];
-                    }),
-                    tap(() => {
-                        this.searchFailed = false;
-                    }),
-                    catchError(() => {
-                        this.searchFailed = true;
-                        return of([]);
-                    })
-                )
+                this.skillService.fetchSkills(term)
+                    .pipe(
+                        map((response) => {
+                            return response.length > 0 ? response : [{id: null, name: term}];
+                        }),
+                        tap(() => {
+                            this.searchFailed = false;
+                        }),
+                        catchError(() => {
+                            this.searchFailed = true;
+                            return of([]);
+                        }),
+                        takeUntil(this.destroy$)
+                    )
             ),
             tap(x => {
                 this.searching = false;
-            })
-        )
+            }), takeUntil(this.destroy$)
+        );
 
     formatMatches = (x: { name: string }) => x.name;
 
@@ -170,12 +180,12 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     }
 
     private createSkillsFormGroup(e): FormGroup {
-        const value = e;
+        const value = e.item;
         return new FormGroup({
             id: new FormControl(value?.id),
             skillNode: new FormGroup({
-                entityId: new FormControl(value?.skillNode?.id || null),
-                name: new FormControl(value?.skillNode?.name),
+                entityId: new FormControl(value?.id || null),
+                name: new FormControl(value?.name),
             }),
             yearsOfExperience: new FormControl(value?.yearsOfExperience || 1)
         });

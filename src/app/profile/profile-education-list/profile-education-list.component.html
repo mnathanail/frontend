@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card">
             <h5 class="card-header"><span>{{sectionTitle}}</span>
-                <span class="float-right mr-1">
+                <span class="float-right mr-1" *ngIf="isOwner">
                     <a (click)="onAddEducation()">
                         <i class="bi bi-plus-circle"></i>
                     </a>

@@ -6,6 +6,7 @@ import {Subject, Subscription} from 'rxjs';
 import {SummaryService} from '../service/summary/summary.service';
 import {ProfileAbstract} from '../abstract-profile';
 import {takeUntil} from 'rxjs/operators';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
 
 @Component({
     selector: 'app-profile-summary',
@@ -21,9 +22,10 @@ export class ProfileSummaryComponent extends ProfileAbstract implements OnInit, 
 
     constructor(protected router: Router,
                 protected route: ActivatedRoute,
+                protected tokenService: TokenStorageService,
                 private http: HttpClient,
                 private summaryService: SummaryService) {
-        super(router, route);
+        super(router, route, tokenService);
         this.candidateId = this.getCandidateId();
     }
 

@@ -1,7 +1,7 @@
 <div class="list-group-item list-group-item-action">
     <div class="d-flex w-100 justify-content-between">
         <h5 class="mb-1">{{educationItem?.school}}</h5>
-        <small class="edit-education" (click)="onEditEducation(index)">
+        <small class="edit-education" (click)="onEditEducation(index)" *ngIf="isOwner">
             <i class="bi bi-pencil"></i>
         </small>
     </div>

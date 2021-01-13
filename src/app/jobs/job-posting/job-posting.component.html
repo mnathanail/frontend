@@ -2,12 +2,18 @@
     <div class="mb-3">
         <label for="jobTitle" class="form-label">Job Title</label>
         <input type="text" class="form-control" id="jobTitle" aria-describedby="jobTitleHelp"
-               formControlName="jobTitle">
-        <!--<div id="jobTitleHelp" class="form-text">-</div>-->
+               formControlName="jobTitle" [ngClass]="{ 'is-invalid': submitted && f.jobTitle.invalid }">
+        <div class="invalid-feedback" *ngIf="submitted && f.jobTitle.invalid">
+            <div *ngIf="submitted && f.jobTitle.errors">Field is required</div>
+        </div>
     </div>
     <div class="mb-3">
         <label for="jobDescription" class="form-label">Job Description</label>
-        <textarea class="form-control" id="jobDescription" rows="5" formControlName="description"></textarea>
+        <textarea class="form-control" id="jobDescription" rows="5" formControlName="description"
+                  [ngClass]="{ 'is-invalid': submitted && f.description.invalid }"></textarea>
+        <div class="invalid-feedback" *ngIf="submitted && f.description.invalid">
+            <div *ngIf="submitted && f.description.errors">Please add a detailed description!</div>
+        </div>
     </div>
 
     <div class="mb-3">
@@ -28,6 +34,7 @@
              style="display: grid!important;grid-template-columns: repeat(4, 1fr);">
 
             <div *ngFor="let requiredSkill of requiredSkills.controls; let i=index;">
+
                 <ng-container [formGroupName]="i" class="mb-2">
 
                     <div class="input-group pb-3">
@@ -60,6 +67,10 @@
                     </div>
                 </ng-container>
             </div>
+            <div [ngClass]="{'is-invalid': submitted && requiredSkills.controls.length == 0 }">
+                <div class="invalid-feedback" >Please add skills required for this job position!</div>
+            </div>
+
         </div>
     </div>
 

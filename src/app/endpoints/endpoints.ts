@@ -38,6 +38,7 @@ export class Endpoints {
     static CANDIDATE_APPLIED_FOR_JOB = 'http://localhost:8080/controller/candidate/:candidateId/apply/job/:jobId';
     static JOB_CANDIDATE_RECOMMENDATION = 'http://localhost:8080/controller/:candidateId/get/recommendation/job-list';
     static JOB_RECRUITER_MANAGES = 'http://localhost:8080/controller/:recruiterId/get/job-list';
+    static GET_RECRUITER_BY_JOB_ID = 'http://localhost:8080/controller/get/recruiter';
 
     static CANDIDATE_SEARCH_JOB_BY_KEYWORDS = 'http://localhost:8080/controller/candidate/search/job/keywords';
 
