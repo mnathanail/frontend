@@ -6,6 +6,10 @@ import {SkillsService} from '../../profile/service/skills/skills.service';
 import {JobService} from '../service/job.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {JobModel} from '../job-model';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
+import {ProfileModel} from '../../profile/profile-model';
+import {Editor, Toolbar} from 'ngx-editor';
+import {AngularEditorConfig} from '@kolkov/angular-editor';
 
 @Component({
     selector: 'app-job-posting',
@@ -20,15 +24,80 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     editState = false;
     loaded = false;
     submitted = false;
+    profileId: string;
     private destroy$ = new Subject<any>();
+
+    editorConfig: AngularEditorConfig = {
+        editable: true,
+        spellcheck: true,
+        height: 'auto',
+        minHeight: '300px',
+        maxHeight: 'auto',
+        width: 'auto',
+        minWidth: '0',
+        translate: 'yes',
+        enableToolbar: true,
+        showToolbar: true,
+        placeholder: 'Enter job description here...',
+        defaultParagraphSeparator: 'p',
+        defaultFontName: '',
+        defaultFontSize: '',
+        fonts: [
+            {class: 'arial', name: 'Arial'},
+            {class: 'times-new-roman', name: 'Times New Roman'},
+            {class: 'calibri', name: 'Calibri'},
+        ],
+        customClasses: [
+            {
+                name: 'quote',
+                class: 'quote',
+            },
+            {
+                name: 'redText',
+                class: 'redText'
+            },
+            {
+                name: 'titleText',
+                class: 'titleText',
+                tag: 'h1',
+            },
+        ],
+        uploadWithCredentials: false,
+        sanitize: true,
+        toolbarPosition: 'top',
+        toolbarHiddenButtons: [
+            [
+                'strikeThrough',
+                'subscript',
+                'superscript',
+                'indent',
+                'outdent',
+                'fontName'
+            ],
+            [
+                'backgroundColor',
+                'customClasses',
+                'link',
+                'unlink',
+                'insertImage',
+                'insertVideo',
+                'insertHorizontalRule',
+                'removeFormat',
+                'toggleEditorMode'
+            ]
+        ]
+    };
 
     constructor(
         private skillService: SkillsService,
         private jobService: JobService,
         private router: Router,
-        private activeRoute: ActivatedRoute
+        private activeRoute: ActivatedRoute,
+        private tokenService: TokenStorageService,
     ) {
         this.editState = this.router.url.indexOf('edit') > 0;
+        this.profileId = (this.tokenService.getUser() as ProfileModel).id.toString();
+
     }
 
     get requiredSkills(): FormArray {
@@ -40,6 +109,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+
         if (this.editState) {
             const jobId = this.activeRoute.snapshot.params.jobId;
             this.jobService.getJobByJobId(jobId)
@@ -92,7 +162,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
         if (this.editState) {
             console.log(this.jobPosting.value);
             const jobId = this.activeRoute.snapshot.params.jobId;
-            this.jobService.patchJob(this.jobPosting.value, jobId)
+            this.jobService.patchJob(this.jobPosting.value, this.profileId, jobId)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
@@ -108,7 +178,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
                     }
                 );
         } else {
-            this.jobService.saveJob(this.jobPosting.value)
+            this.jobService.saveJob(this.profileId, this.jobPosting.value)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
@@ -128,7 +198,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     }
 
     onDelete(jobId: string): void {
-        this.jobService.deleteJobByJobId(jobId)
+        this.jobService.deleteJobByJobId(this.profileId, jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
@@ -165,7 +235,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             tap(x => {
                 this.searching = false;
             }), takeUntil(this.destroy$)
-        );
+        )
 
     formatMatches = (x: { name: string }) => x.name;
 

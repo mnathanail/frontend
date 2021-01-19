@@ -67,7 +67,7 @@ export class JobViewComponent implements OnInit, OnDestroy {
     }
 
     deleteJob(jobId: string): void {
-        this.jobService.deleteJobByJobId(jobId)
+        this.jobService.deleteJobByJobId(this.user.id.toString(), jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {

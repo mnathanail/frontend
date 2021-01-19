@@ -6,6 +6,7 @@ import {takeUntil} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {TokenStorageService} from '../shared/service/token-storage.service';
 import {MustMatch} from '../shared/forms/validator/custom-validator';
+import {ProfileModel} from '../profile/profile-model';
 
 @Component({
     selector: 'app-register',
@@ -45,9 +46,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 .subscribe(
                     (data) => {
                         if (data.headers != null && data.body != null && data.ok) {
-
+                            console.log(data);
                             const token = data.headers.get('Authorization');
                             this.tokenService.saveToken(token);
+                            this.tokenService.saveUser(data.body as ProfileModel);
                             setTimeout(() => {
                                 this.router.navigate([`profile/${data.body.id}`]);
                             }, 500);

@@ -33,6 +33,10 @@ import { JobViewComponent } from './jobs/job-view/job-view.component';
 import { JobSearchListComponent } from './jobs/job-search-list/job-search-list.component';
 import { JobSearchItemComponent } from './jobs/job-search-list/job-search-item/job-search-item.component';
 import { LogoutComponent } from './logout/logout.component';
+import { SearchBySkillComponent } from './shared/skills/search/search-by-skill/search-by-skill.component';
+import { JobsAppliedComponent } from './jobs/jobs-applied/jobs-applied.component';
+import { JobsManageComponent } from './jobs/jobs-manage/jobs-manage.component';
+import {AngularEditorModule} from '@kolkov/angular-editor';
 
 @NgModule({
     declarations: [
@@ -63,6 +67,9 @@ import { LogoutComponent } from './logout/logout.component';
         JobSearchListComponent,
         JobSearchItemComponent,
         LogoutComponent,
+        SearchBySkillComponent,
+        JobsAppliedComponent,
+        JobsManageComponent,
     ],
     imports: [
         BrowserModule,
@@ -70,7 +77,8 @@ import { LogoutComponent } from './logout/logout.component';
         ReactiveFormsModule,
         HttpClientModule,
         NgbModule,
-        FormsModule
+        FormsModule,
+        AngularEditorModule
     ],
     providers: [interceptors],
     bootstrap: [AppComponent]

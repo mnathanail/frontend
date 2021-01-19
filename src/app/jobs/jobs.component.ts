@@ -27,9 +27,12 @@ export class JobsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
     }
 
-    onEnter(value: any): void {
+    onEnter(value: any): void | boolean {
+        if (value === null) {
+            return false;
+        }
         const params = value.split(',').map(e => e.trim());
-        const options = {queryParams: {keywords: params, page: 0}};
+        const options = {queryParams: {keywords: params}};
         this.router.navigate(['jobs/job-search'], options);
         /*.then(
             v => {
@@ -79,7 +82,7 @@ export class JobsComponent implements OnInit, OnDestroy {
                 this.searching = false;
             }),
             takeUntil(this.destroy$)
-        )
+        );
 
     formatMatches = (x: { name: string }) => x.name;
 

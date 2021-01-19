@@ -21,7 +21,7 @@ export class LogoutComponent implements OnInit {
         this.authenticationStatus.setAuthenticationStatus(!!this.tokenService.getToken());
         setTimeout(() => {
             this.route.navigate(['/login']);
-        }, 30000);
+        }, 2000);
 
     }
 

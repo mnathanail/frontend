@@ -13,45 +13,65 @@ export class JobService {
     constructor(private http: HttpClient) {
     }
 
-    saveJob(jobModel: JobModel): Observable<JobModel> {
-        const url = Endpoints.JOB_SAVE.replace(':recruiterId', '2');
-        return this.http.post<JobModel>(url, jobModel);
+    saveJob(recruiterId: string, jobModel: JobModel): Observable<JobModel> {
+        const url = Endpoints.JOB_SAVE;
+        recruiterId = '2';
+        const params = new HttpParams()
+            .set('recruiterId', recruiterId);
+        return this.http.post<JobModel>(url, jobModel, {params});
     }
 
-    getJobByJobId(id: string): Observable<JobModel> {
-        const url = Endpoints.JOB_GET_BY_ID.replace(':jobId', id);
-        return this.http.get<JobModel>(url);
+    getJobByJobId(jobId: string): Observable<JobModel> {
+        const url = Endpoints.JOB_GET_BY_ID;
+        const params = new HttpParams()
+            .set('jobId', jobId);
+        return this.http.get<JobModel>(url, {params});
     }
 
     getCandidateApplyJobList(candidateId: string): Observable<JobModel[]> {
-        const url = Endpoints.JOB_CANDIDATE_APPLIED.replace(':candidateId', candidateId);
-        return this.http.get<JobModel[]>(url);
+        const url = Endpoints.JOB_CANDIDATE_APPLIED;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.get<JobModel[]>(url, {params});
     }
 
     postCandidateApplyForJob(candidateId: string, jobId: string): Observable<boolean> {
-        const url = Endpoints.CANDIDATE_APPLIED_FOR_JOB
-            .replace(':candidateId', candidateId)
-            .replace(':jobId', jobId);
-        return this.http.post<boolean>(url, {});
+        const url = Endpoints.CANDIDATE_APPLIED_FOR_JOB;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('jobId', jobId);
+        return this.http.post<boolean>(url, {}, {params});
+    }
+
+    deleteCandidateApplyForJob(candidateId: string, jobId: string): Observable<boolean> {
+        const url = Endpoints.CANDIDATE_APPLIED_FOR_JOB;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('jobId', jobId);
+        return this.http.delete<boolean>(url, {params});
     }
 
     getRecruiterManagesJobList(recruiterId: string): Observable<JobModel[]> {
-        const url = Endpoints.JOB_RECRUITER_MANAGES.replace(':recruiterId', recruiterId);
-        return this.http.get<JobModel[]>(url);
+        const url = Endpoints.JOB_RECRUITER_MANAGES;
+        const params = new HttpParams()
+            .set('recruiterId', '2');
+        return this.http.get<JobModel[]>(url, {params});
     }
 
-    patchJob(jobModel: JobModel, jobId: string): Observable<JobModel> {
-        const url = Endpoints.JOB_PATCH
-            .replace(':recruiterId', '2')
-            .replace(':jobId', jobId);
-        return this.http.patch<JobModel>(url, jobModel);
+    patchJob(jobModel: JobModel, recruiterId: string, jobId: string): Observable<JobModel> {
+        const url = Endpoints.JOB_PATCH;
+        const params = new HttpParams()
+            .set('recruiterId', '2')
+            .set('jobId', jobId);
+        return this.http.patch<JobModel>(url, jobModel, {params});
     }
 
-    deleteJobByJobId(id: string): Observable<boolean> {
-        const url = Endpoints.JOB_DELETE
-            .replace(':recruiterId', '2')
-            .replace(':jobId', id);
-        return this.http.delete<boolean>(url);
+    deleteJobByJobId(recruiterId: string, jobId: string): Observable<boolean> {
+        const url = Endpoints.JOB_DELETE;
+        const params = new HttpParams()
+            .set('recruiterId', '2')
+            .set('jobId', jobId);
+        return this.http.delete<boolean>(url, {params});
     }
 
     getJobRecommendationForCandidate(candidateId: string): Observable<JobModel[]> {

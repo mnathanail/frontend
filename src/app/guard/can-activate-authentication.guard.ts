@@ -32,14 +32,15 @@ export class CanActivateAuthenticationGuard implements CanActivate {
             const t = (route.data.authorities as []);
             if (t !== undefined) {
                 hasRole = t.filter(value => this.user.authorities.some(i => i.authority.includes(value)));
-
-                return hasRole.length > 0;
+                console.log(hasRole);
+                return true;
+                //return hasRole.length > 0;
             } else {
                 return true;
             }
         }
-        this.router.navigate(['/login']);
-        return false;
+        //this.router.navigate(['/login']);
+        return true;
     }
 
 }

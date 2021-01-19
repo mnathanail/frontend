@@ -34,7 +34,7 @@
                                         <img class="rounded-circle img-fluid img-thumbnail">
                                     </ng-template>
 
-                                <a (click)="profilePhotoAction()">
+                                <a (click)="profilePhotoAction()" *ngIf="isOwner">
                                     <div class="svgContainer">
                                         <i class="bi bi-camera camera bi--xl m-1"></i>
                                     </div>

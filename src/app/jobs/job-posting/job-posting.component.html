@@ -9,11 +9,13 @@
     </div>
     <div class="mb-3">
         <label for="jobDescription" class="form-label">Job Description</label>
-        <textarea class="form-control" id="jobDescription" rows="5" formControlName="description"
-                  [ngClass]="{ 'is-invalid': submitted && f.description.invalid }"></textarea>
+        <!--<textarea class="form-control" id="jobDescription" rows="5"
+                  [ngClass]="{ 'is-invalid': submitted && f.description.invalid }"></textarea>-->
+        <angular-editor id="jobDescription" formControlName="description"  [config]="editorConfig"></angular-editor>
         <div class="invalid-feedback" *ngIf="submitted && f.description.invalid">
             <div *ngIf="submitted && f.description.errors">Please add a detailed description!</div>
         </div>
+
     </div>
 
     <div class="mb-3">

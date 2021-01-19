@@ -1,12 +1,13 @@
-import {Component, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {JobService} from '../service/job.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {JobsComponent} from '../jobs.component';
 import {SkillsService} from '../../profile/service/skills/skills.service';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {JobModel} from '../job-model';
 import {Pageable} from '../../shared/models/pageable';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
+import {ProfileModel} from '../../profile/profile-model';
 
 @Component({
     selector: 'app-job-search-list',
@@ -21,26 +22,29 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
     selectedItem: any;
     page: Pageable;
     collectionSize: number;
-
-    private destroy$ = new Subject<any>();
     isActive = false;
     thePageNumber = 1;
+    userId: string;
+    private destroy$ = new Subject<any>();
 
     constructor(private jobService: JobService,
                 private activeRoute: ActivatedRoute,
                 private router: Router,
-                private skillService: SkillsService) {
+                private skillService: SkillsService,
+                private tokenService: TokenStorageService) {
+        const user = this.tokenService.getUser() as ProfileModel;
+        this.userId = user.id.toString();
     }
 
     ngOnInit(): void {
         this.getJobs();
     }
 
-    updatePage(): void{
+    updatePage(): void {
         this.getJobs();
     }
 
-    getJobs(): void{
+    getJobs(): void {
         this.activeRoute.queryParams
             .subscribe(params => {
                 this.jobService.getJobsForCandidateDependingOnSkillArray(params.keywords, this.thePageNumber.toString())
@@ -91,6 +95,18 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                 },
                 () => {
                     console.log('Completed');
+                }
+            );
+    }
+
+    deleteJobAppy(jobId: string): void {
+        this.jobService.deleteCandidateApplyForJob(this.userId, jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    if (value) {
+                        console.log('Successfully undo');
+                    }
                 }
             );
     }
