@@ -1,0 +1,81 @@
+<form [formGroup]="jobPosting" (ngSubmit)="onSubmit()" *ngIf="loaded">
+    <div class="mb-3">
+        <label for="jobTitle" class="form-label">Job Title</label>
+        <input type="text" class="form-control" id="jobTitle" aria-describedby="jobTitleHelp"
+               formControlName="jobTitle" [ngClass]="{ 'is-invalid': submitted && f.jobTitle.invalid }">
+        <div class="invalid-feedback" *ngIf="submitted && f.jobTitle.invalid">
+            <div *ngIf="submitted && f.jobTitle.errors">Field is required</div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="jobDescription" class="form-label">Job Description</label>
+        <!--<textarea class="form-control" id="jobDescription" rows="5"
+                  [ngClass]="{ 'is-invalid': submitted && f.description.invalid }"></textarea>-->
+        <angular-editor id="jobDescription" formControlName="description"  [config]="editorConfig"></angular-editor>
+        <div class="invalid-feedback" *ngIf="submitted && f.description.invalid">
+            <div *ngIf="submitted && f.description.errors">Please add a detailed description!</div>
+        </div>
+
+    </div>
+
+    <div class="mb-3">
+        <label for="addRequiredSkill" class="form-label">Required Skills And Years Of Experience</label>
+        <input type="text" class="form-control" formControlName="skillExcluded"
+               id="addRequiredSkill"
+               placeholder="Start typing..."
+               aria-label="Skill" aria-describedby="searchSkill"
+               [ngbTypeahead]="search"
+               [inputFormatter]="formatMatches"
+               [resultFormatter]="formatMatches"
+               (selectItem)="addRequiredSkills($event);"
+        >
+    </div>
+
+    <div class="mb-3 mt-1" formArrayName="requiredSkills">
+        <div class="list-group list-group-horizontal"
+             style="display: grid!important;grid-template-columns: repeat(4, 1fr);">
+
+            <div *ngFor="let requiredSkill of requiredSkills.controls; let i=index;">
+
+                <ng-container [formGroupName]="i" class="mb-2">
+
+                    <div class="input-group pb-3">
+                        <div class="input-group-append pb-1">
+
+                            <button class="btn btn-primary btn-sm text-truncate" style="max-width: 250px;" type="button"
+                                    ngbTooltip="{{requiredSkill.get('skillNode.name').value}}">
+                                <span>{{requiredSkill.get('skillNode.name').value}}</span>
+                            </button>
+                            <button class="btn btn-primary btn-sm" type="button">
+                            <span (click)="removeSkill(i)">
+                                <i class="bi bi-x"></i>
+                            </span>
+                            </button>
+
+                            <input type="number"
+                                   formControlName="yearsOfExperience"
+                                   class="form-control yearsOfExperience"
+                                   min="1"
+                                   style="max-width: 50px;"
+                                   value="{{requiredSkill.get('yearsOfExperience').value}}"
+                            >
+                            <div formGroupName="skillNode">
+                                <input type="hidden" formControlName="name"
+                                       value="{{requiredSkill.get('skillNode.name').value}}">
+                                <input type="hidden" formControlName="entityId"
+                                       value="{{requiredSkill.get('skillNode.entityId').value}}">
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div [ngClass]="{'is-invalid': submitted && requiredSkills.controls.length == 0 }">
+                <div class="invalid-feedback" >Please add skills required for this job position!</div>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="reset" class="btn btn-danger mr-1">Reset Form</button>
+    <button type="submit" class="btn btn-success ml-1">Submit</button>
+</form>

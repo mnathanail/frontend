@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Endpoints} from '../../../endpoints/endpoints';
 import {ExperienceModel} from '../../profile-experience-list/experience-model';
@@ -10,35 +10,47 @@ export class ExperienceService {
     constructor(private http: HttpClient) {
     }
 
-    fetchExperienceList(): Observable<ExperienceModel[]> {
-        const url = Endpoints.EXPERIENCE_LIST_GET.replace(':id', '1');
-        return this.http.get<ExperienceModel[]>(url);
+    fetchExperienceList(candidateId: string): Observable<ExperienceModel[]> {
+        const url = Endpoints.EXPERIENCE_LIST_GET;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.get<ExperienceModel[]>(url, {params});
     }
 
-    fetchExperience(experienceId: string): Observable<ExperienceModel> {
-        const url = Endpoints.EXPERIENCE_GET
-            .replace(':id', '1')
-            .replace(':experienceId', experienceId);
-        return this.http.get<ExperienceModel>(url);
+    fetchExperience(candidateId: string, experienceId: string): Observable<ExperienceModel> {
+        const url = Endpoints.EXPERIENCE_GET;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('experienceId', experienceId);
+        return this.http.get<ExperienceModel>(url, {params});
     }
 
-    setExperience(experienceModel: ExperienceModel): Observable<ExperienceModel> {
-        const url = Endpoints.EXPERIENCE_SAVE.replace(':id', '1');
-        return this.http.post<ExperienceModel>(url, experienceModel);
+    setExperience(candidateId: string, experienceModel: ExperienceModel): Observable<ExperienceModel> {
+        const url = Endpoints.EXPERIENCE_SAVE;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.post<ExperienceModel>(url, experienceModel, {params});
     }
 
-    patchExperience(experienceModel: ExperienceModel, experienceId: string): Observable<ExperienceModel> {
-        const url = Endpoints.EXPERIENCE_PATCH
-            .replace(':id', '1')
-            .replace(':experienceId', String(experienceId));
+    /*
+     *
+     * Todo: change the patch logic
+     *
+     */
+    patchExperience(experienceModel: ExperienceModel, candidateId: string, experienceId: string): Observable<ExperienceModel> {
+        const url = Endpoints.EXPERIENCE_PATCH;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('experienceId', experienceId);
         return this.http.patch<ExperienceModel>(url, experienceModel);
     }
 
-    deleteExperience(experienceId: string): Observable<boolean> {
-        const url = Endpoints.EXPERIENCE_DELETE
-            .replace(':id', '1')
-            .replace(':experienceId', experienceId);
-        return this.http.delete<boolean>(url);
+    deleteExperience(candidateId: string, experienceId: string): Observable<boolean> {
+        const url = Endpoints.EXPERIENCE_DELETE;
+        const params = new HttpParams()
+            .set('candidateId', candidateId)
+            .set('experienceId', experienceId);
+        return this.http.delete<boolean>(url, {params});
     }
 
 }

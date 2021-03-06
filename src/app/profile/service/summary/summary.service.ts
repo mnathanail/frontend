@@ -3,8 +3,7 @@ import {Observable} from 'rxjs';
 import {SummaryModel} from '../../profile-summary/summary-model';
 import {Endpoints} from '../../../endpoints/endpoints';
 import {SummaryMessagesService} from './summary-messages.service';
-import {HttpClient} from '@angular/common/http';
-import {UrlParameterService} from '../../../shared/service/url-parameter.service';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -12,19 +11,23 @@ import {UrlParameterService} from '../../../shared/service/url-parameter.service
 export class SummaryService{
 
     constructor(private http: HttpClient,
-                private messages: SummaryMessagesService,
-                private urlParameterService: UrlParameterService) {
+                private messages: SummaryMessagesService
+    ) {
     }
 
-    getSummary(id: string): Observable<SummaryModel> {
-        const url = Endpoints.SUMMARY_GET.replace(':id', '1');
-        return this.http.get<SummaryModel>(url);
+    getSummary(candidateId: string): Observable<SummaryModel> {
+        const url = Endpoints.SUMMARY_GET;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        return this.http.get<SummaryModel>(url, {params});
     }
 
-    saveSummary(summary: SummaryModel): Observable<SummaryModel> {
-        const url = Endpoints.SUMMARY_POST.replace(':id', '1');
-        const returnedTarget = Object.assign(summary, {id: 1});
-        return this.http.post<SummaryModel>(url, returnedTarget);
+    saveSummary(candidateId: string, summary: SummaryModel): Observable<SummaryModel> {
+        const url = Endpoints.SUMMARY_POST;
+        const params = new HttpParams()
+            .set('candidateId', candidateId);
+        const returnedTarget = Object.assign(summary, {id: candidateId});
+        return this.http.post<SummaryModel>(url, {returnedTarget}, {params});
     }
 
     getMessages(): SummaryMessagesService{

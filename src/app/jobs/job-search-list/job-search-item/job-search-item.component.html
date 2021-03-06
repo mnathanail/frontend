@@ -1,0 +1,29 @@
+<div class="card border-0">
+    <div class="tab-content" *ngIf="jobItem">
+        <div class="tab-pane active" id="home" role="tabpanel">
+            <h3>
+                <a routerLink="../../job-view/{{jobItem.jobId}}">
+                    {{jobItem?.jobTitle}}
+                </a>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="card-text">{{jobItem?.description}}</p>
+
+        <ul class="list-group" *ngFor="let skill of jobItem?.requiredSkills">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{skill.skillNode.name}}
+                <span class="badge badge-primary badge-pill">{{skill.yearsOfExperience}}</span>
+            </li>
+        </ul>
+
+    </div>
+    <br>
+    <button class="btn btn-success" (click)="applyForJob(jobItem?.jobId)">
+        Apply
+    </button>
+</div>
+
+<!--
+{{this.jobItem | json }}-->

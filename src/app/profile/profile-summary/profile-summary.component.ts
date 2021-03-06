@@ -2,32 +2,41 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {SummaryModel} from './summary-model';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {SummaryService} from '../service/summary/summary.service';
+import {ProfileAbstract} from '../abstract-profile';
+import {takeUntil} from 'rxjs/operators';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
 
 @Component({
     selector: 'app-profile-summary',
     templateUrl: './profile-summary.component.html',
     styleUrls: ['./profile-summary.component.css']
 })
-export class ProfileSummaryComponent implements OnInit, OnDestroy {
+export class ProfileSummaryComponent extends ProfileAbstract implements OnInit, OnDestroy {
     subscription: Subscription;
     data: SummaryModel;
     loaded = false;
+    candidateId: string;
+    private destroy$ = new Subject();
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
+    constructor(protected router: Router,
+                protected route: ActivatedRoute,
+                protected tokenService: TokenStorageService,
                 private http: HttpClient,
                 private summaryService: SummaryService) {
+        super(router, route, tokenService);
+        this.candidateId = this.getCandidateId();
     }
 
     ngOnInit(): void {
-        this.summaryService.getMessages().getSummaryChanged().subscribe(
+        this.summaryService.getMessages().getSummaryChanged()
+            .pipe(takeUntil(this.destroy$)).subscribe(
             (value: SummaryModel) => {
                 this.data = value;
             }
         );
-        this._getSummary('1');
+        this._getSummary(this.getCandidateId());
     }
 
     onAddOrEditSummary(): void {
@@ -35,12 +44,15 @@ export class ProfileSummaryComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
-        this.summaryService.getMessages().setSummaryChangedComplete();
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
+        /*this.subscription.unsubscribe();
+        this.summaryService.getMessages().setSummaryChangedComplete();*/
     }
 
     private _getSummary(id: string): void {
-        this.subscription = this.summaryService.getSummary(id).subscribe(
+        this.subscription = this.summaryService.getSummary(id)
+            .pipe(takeUntil(this.destroy$)).subscribe(
             (value) => {
                 this.data = value;
                 this.loaded = true;

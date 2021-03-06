@@ -27,6 +27,16 @@ import {ProfileSummaryComponent} from './profile/profile-summary/profile-summary
 import {ProfileSkillListComponent} from './profile/profile-skill-list/profile-skill-list.component';
 import {ProfileSkillItemComponent} from './profile/profile-skill-list/profile-skill-item/profile-skill-item.component';
 import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
+import { JobsComponent } from './jobs/jobs.component';
+import { JobPostingComponent } from './jobs/job-posting/job-posting.component';
+import { JobViewComponent } from './jobs/job-view/job-view.component';
+import { JobSearchListComponent } from './jobs/job-search-list/job-search-list.component';
+import { JobSearchItemComponent } from './jobs/job-search-list/job-search-item/job-search-item.component';
+import { LogoutComponent } from './logout/logout.component';
+import { SearchBySkillComponent } from './shared/skills/search/search-by-skill/search-by-skill.component';
+import { JobsAppliedComponent } from './jobs/jobs-applied/jobs-applied.component';
+import { JobsManageComponent } from './jobs/jobs-manage/jobs-manage.component';
+import {AngularEditorModule} from '@kolkov/angular-editor';
 
 @NgModule({
     declarations: [
@@ -51,6 +61,15 @@ import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
         ProfileSkillListComponent,
         ProfileSkillItemComponent,
         FilterByNamePipe,
+        JobsComponent,
+        JobPostingComponent,
+        JobViewComponent,
+        JobSearchListComponent,
+        JobSearchItemComponent,
+        LogoutComponent,
+        SearchBySkillComponent,
+        JobsAppliedComponent,
+        JobsManageComponent,
     ],
     imports: [
         BrowserModule,
@@ -58,7 +77,8 @@ import { FilterByNamePipe } from './shared/filter/filter-by-name.pipe';
         ReactiveFormsModule,
         HttpClientModule,
         NgbModule,
-        FormsModule
+        FormsModule,
+        AngularEditorModule
     ],
     providers: [interceptors],
     bootstrap: [AppComponent]

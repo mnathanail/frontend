@@ -1,65 +1,47 @@
-import {Injectable} from '@angular/core';
-import {
-    HttpErrorResponse,
-    HttpEvent,
-    HttpHandler,
-    HttpHeaderResponse,
-    HttpInterceptor, HttpProgressEvent,
-    HttpRequest, HttpResponse,
-    HttpSentEvent, HttpUserEvent
-} from '@angular/common/http';
-import {Observable, of, throwError} from 'rxjs';
-import {catchError, retry} from 'rxjs/operators';
-import {Route, Router} from '@angular/router';
+import {Injectable, OnDestroy} from '@angular/core';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {Observable, Subject, throwError} from 'rxjs';
+import {catchError, takeUntil} from 'rxjs/operators';
+import {Router} from '@angular/router';
+import {TokenStorageService} from '../../shared/service/token-storage.service';
 
 @Injectable()
-export class HttpErrorInterceptor implements HttpInterceptor {
+export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
+    private destroy$ = new Subject();
 
-    constructor(private router: Router) {
+    constructor(private router: Router,
+                private tokenService: TokenStorageService) {
     }
 
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-        return next.handle(request).pipe(
-            //retry(2),
-            catchError((error) => {
-
-                let handled = false;
-                console.error(error);
-                if (error instanceof HttpErrorResponse) {
+        return next.handle(request)
+            .pipe(
+                catchError((error: HttpErrorResponse) => {
+                    let errorMessage = '';
                     if (error.error instanceof ErrorEvent) {
-                        console.error('Error Event');
+                        // client-side error
+                        errorMessage = `Error: ${error.error.message}`;
+                    } else {
+                        // server-side error
+                        errorMessage = `Error Status: ${error.status}\nMessage: ${error.message}`;
                     }
-                    else {
-                        console.log(`error status : ${error.status} ${error.statusText}`);
-                        switch (error.status) {
-                            case 401:      // login
-                                this.router.navigateByUrl('/login');
-                                console.log(`redirect to login`);
-                                handled = true;
-                                break;
-                            case 403:     // forbidden
-                                this.router.navigateByUrl('/login');
-                                console.log(`redirect to login`);
-                                handled = true;
-                                break;
-                        }
+                    console.log(error);
+                    if (error.status === 401 || error.status === 403) {
+                        // clear sessionStorage
+                        this.router.navigate(['/login'], {skipLocationChange: true})
+                            .then((value) => {
+                                this.tokenService.emptyStorage();
+                            });
                     }
-                }
-                else {
-                    console.error('You better run!');
-                }
-
-                if (handled) {
-                    console.log('return back ');
-                    return of(error);
-                } else {
-                    console.log('throw error back to to the subscriber');
-                    return throwError(error);
-                }
-
-            })
-        );
+                    return throwError(errorMessage);
+                })
+            );
     }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
+    }
+
 }

@@ -5,4 +5,9 @@ export interface ProfileModel {
     email: string;
     profilePic: any;
     image: string;
+    authorities: Authority[];
+}
+
+interface Authority{
+    authority: string;
 }

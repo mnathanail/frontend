@@ -9,8 +9,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class ProfileSkillItemComponent implements OnInit {
     @Input() skillItem: any;
     @Input() index: string;
-    constructor(private router: Router,
-                private route: ActivatedRoute) {
+    constructor(private router: Router) {
     }
 
     ngOnInit(): void {

@@ -1,0 +1,22 @@
+<div *ngIf="loaded && jobList.length>0">
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let item of jobList">
+            <h3><a [routerLink]="['../job-view/'+item.jobId]">
+                {{item.jobTitle}}
+            </a>
+            </h3>
+            <br>
+            {{item.jobId}} <br>
+            <div class="text-truncate">{{item.description}}</div>
+            <br>
+        </li>
+    </ul>
+</div>
+
+<div *ngIf="jobList?.length === 0">
+    You have not applied for a job at the moment!
+</div>
+<!--
+match(r:RecruiterNode {entity_id:2})-[m:MANAGES]->(j:JobNode)<-[a:APPLIED_FOR]-(c:CandidateNode) return j, SIZE( (:CandidateNode)-[:APPLIED_FOR]->(j) ) as applied
+match(c:CandidateNode)-[:APPLIED_FOR]->(j:JobNode {job_id:'7af2f988-bbb4-4130-876e-74419d91c406'})-[:REQUIRES]-(s:SkillNode) return c as candidate, j as jobNode, s as skills
+-->

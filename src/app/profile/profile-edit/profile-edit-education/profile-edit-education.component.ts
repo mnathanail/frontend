@@ -1,40 +1,39 @@
-import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, ParamMap, Params, Router} from '@angular/router';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
-import {FormControl, FormGroup} from '@angular/forms';
-import {filter, map} from 'rxjs/operators';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProfileAbstractEdit} from '../profile-abstract-edit';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {LoaderService} from '../../../shared/loader/service/loader.service';
-import {ExperienceService} from '../../service/experience/experience.service';
-import {ExperienceMessagesService} from '../../service/experience/experience-messages.service';
-import {ExperienceImpl} from '../../profile-experience-list/experience-impl';
 import {FormsMethods} from '../../../shared/forms/forms-methods';
-import {ExperienceModel} from '../../profile-experience-list/experience-model';
 import {CrudEventsModel} from '../../../shared/enums/crud-events-model.enum';
 import {monthNames} from '../../../shared/months';
 import {EducationModel} from '../../profile-education-list/education-model';
 import {EducationImpl} from '../../profile-education-list/education-impl';
 import {EducationService} from '../../service/education/education.service';
 import {EducationMessagesService} from '../../service/education/education-messages.service';
+import {DateLessThan} from '../../../shared/forms/validator/custom-validator';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'app-profile-edit-education',
     templateUrl: './profile-edit-education.component.html',
     styleUrls: ['./profile-edit-education.component.css']
 })
-export class ProfileEditEducationComponent  extends ProfileAbstractEdit implements OnInit, AfterViewInit, OnDestroy {
+export class ProfileEditEducationComponent extends ProfileAbstractEdit implements OnInit, AfterViewInit, OnDestroy {
 
     @ ViewChild('content') content: ElementRef;
     years: any[] = [];
+    futureYears: any[] = [];
     months: any[] = [];
     editState = false;
     editEducationForm: FormGroup;
     toggleChecked = false;
+    candidateId: string;
+    submitted = false;
     private title: string;
-    private subscription = new Subscription();
-    private crudSubscription = new Subscription();
+
 
     constructor(protected config: NgbModalConfig,
                 protected modalService: NgbModal,
@@ -46,6 +45,7 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                 private educationMessages: EducationMessagesService,
     ) {
         super(config, modalService, router, route);
+        this.candidateId = this.getCandidateId();
         this.initializeForm(new EducationImpl());
     }
 
@@ -53,12 +53,13 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
         this.editState = this.router.url.indexOf('edit') > 0;
 
         this.title = this.editState === true ? 'Edit Education' : 'Add Education';
-        const educationId = this.route.snapshot.params.eduId;
         if (this.editState) {
-            this.fetchSelectedEducation(educationId);
+            const educationId = this.getEducationId();
+            this.fetchSelectedEducation(this.candidateId, educationId);
         }
         this._populateSelectYears();
         this._populateSelectMonths();
+        this._populateFutureSelectYears();
     }
 
     ngAfterViewInit(): void {
@@ -70,16 +71,22 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     }
 
     ngOnDestroy(): void {
-        this.subscription.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 
-    onSubmit(): void {
+    onSubmit(): void | boolean {
+        this.submitted = true;
+        console.log(this.editEducationForm.value);
+        console.log(this.editEducationForm.valid);
+        return false;
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editEducationForm);
             const educationId = this.editEducationForm.get('educationId').value;
             console.log(a);
-            this.educationService.patchEducation(a as EducationModel, educationId)
+            this.educationService.patchEducation(a as EducationModel, this.candidateId, educationId)
                 /*.filter(delay(500))*/
+                .pipe(takeUntil(this.destroy$))
                 .subscribe((value) => {
                         console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.UPDATE, data: value});
@@ -92,11 +99,12 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
                     }
                 );
         } else {
-            this.educationService.setEducation(this.editEducationForm.value)
+            this.educationService.setEducation(this.candidateId, this.editEducationForm.value)
                 /*.filter(delay(500))*/
+                .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
-                        console.log(value)
+                        console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.POST, data: value});
                     },
                     error => {
@@ -110,7 +118,8 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     }
 
     deleteExperienceItem(experienceId: string): void {
-        this.educationService.deleteEducatione(experienceId)
+        this.educationService.deleteEducatione(this.candidateId, experienceId)
+            .pipe(takeUntil(this.destroy$))
             .subscribe((value) => {
                     if (value === true) {
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.DELETE, data: this.editEducationForm.value});
@@ -127,15 +136,16 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
 
     private initializeForm(value: EducationModel): void {
         this.editEducationForm = new FormGroup({
-            title: new FormControl(value?.title),
-            degree: new FormControl(value?.degree),
-            school: new FormControl(value?.school),
+            title: new FormControl(value?.title, Validators.required),
+            degree: new FormControl(value?.degree, Validators.required),
+            school: new FormControl(value?.school, Validators.required),
             period: new FormGroup({
                 startYear: new FormControl(value?.period?.startYear),
                 startMonth: new FormControl(value?.period?.startMonth),
                 endYear: new FormControl(value?.period?.endYear),
                 endMonth: new FormControl(value?.period?.endMonth)
-            }),
+            }, {validators: DateLessThan('startYear', 'endYear')}
+            ),
             educationId: new FormControl(value.educationId)
         });
 
@@ -144,10 +154,19 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
     private _populateSelectYears(): any[] {
         const year = new Date().getFullYear();
         const current = year;
-        for (let i = 1960; i <= year; i++) {
+        for (let i = 1970; i <= year; i++) {
             this.years.push(i);
         }
         return this.years.reverse();
+    }
+
+    private _populateFutureSelectYears(): any[] {
+        const year = new Date().getFullYear() + 10;
+        const current = year;
+        for (let i = 1970; i <= year; i++) {
+            this.futureYears.push(i);
+        }
+        return this.futureYears.reverse();
     }
 
     private _populateSelectMonths(): any[] {
@@ -157,14 +176,17 @@ export class ProfileEditEducationComponent  extends ProfileAbstractEdit implemen
         return this.months;
     }
 
-    private fetchSelectedEducation(educationId: string): void {
-        this.educationService.fetchEducation(educationId)
+    private fetchSelectedEducation(candidateId: string, educationId: string): void {
+        this.educationService.fetchEducation(candidateId, educationId)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
                     this.initializeForm(value);
                 }
             );
     }
+
+    get f(): { [p: string]: AbstractControl } { return this.editEducationForm.controls; }
 
 
 }
