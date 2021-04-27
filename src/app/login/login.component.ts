@@ -6,6 +6,7 @@ import {LoaderService} from '../shared/loader/service/loader.service';
 import {Router} from '@angular/router';
 import {TokenStorageService} from '../shared/service/token-storage.service';
 import {delay, take, takeUntil} from 'rxjs/operators';
+import {ToastService} from '../toast/service/toast.service';
 
 @Component({
     selector: 'app-login',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     constructor(private loginService: LoginService,
                 private loaderService: LoaderService,
                 private router: Router,
-                private tokenService: TokenStorageService) {
+                private tokenService: TokenStorageService,
+                private toastService: ToastService) {
     }
 
     ngOnInit(): void {
@@ -33,8 +35,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     onLogin(): void {
         this.submitted = true;
-        console.log(this.loginForm.valid);
-
         if (this.loginForm.valid) {
             this.loaderService.showLoader();
             this.loginService.onLogin(this.loginForm.value)
@@ -52,14 +52,20 @@ export class LoginComponent implements OnInit, OnDestroy {
                         }
                     },
                     error => {
-                        console.log(error);
+                        this.toastService.show(error.error.message, {
+                            classname: 'bg-danger text-light',
+                        });
                     },
                     () => {
                         console.log('Completed!');
                     });
             this.loaderService.hideLoader();
         } else {
-            console.log(this.loginForm.status);
+            this.toastService.show('Form is invalid :(', {
+                classname: 'bg-danger text-light',
+                delay: 200,
+                autohide: true
+            });
         }
     }
 

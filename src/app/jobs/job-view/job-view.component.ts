@@ -2,10 +2,11 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {JobService} from '../service/job.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {JobModel} from '../job-model';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {EMPTY, of, Subject} from 'rxjs';
+import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {TokenStorageService} from '../../shared/service/token-storage.service';
 import {ProfileModel} from '../../profile/profile-model';
+import {RecommendationExtendedModel} from '../../search-for-candidate/recommendation-extended-model';
 
 @Component({
     selector: 'app-job-view',
@@ -17,7 +18,14 @@ export class JobViewComponent implements OnInit, OnDestroy {
     jobValue: JobModel;
     ownsJob = false;
     user: ProfileModel;
+    candidateId: string;
+    buttonLabel = 'Apply';
+    hasApplied = false;
+    isRecruiter = false;
+    jobId: string;
+    recommendationForJob: RecommendationExtendedModel[];
     private destroy$ = new Subject<any>();
+    jobRequires: any;
 
     constructor(private activeRoute: ActivatedRoute,
                 private router: Router,
@@ -25,12 +33,25 @@ export class JobViewComponent implements OnInit, OnDestroy {
                 private tokenService: TokenStorageService) {
 
         this.user = (tokenService.getUser() as ProfileModel);
-
+        this.isRecruiter = tokenService.isRecruiter();
+        this.candidateId = this.user.id.toString();
+        this.jobId = this.activeRoute.snapshot.params.jobId;
     }
 
     ngOnInit(): void {
-        const jobId = this.activeRoute.snapshot.params.jobId;
-        this.jobService.getJobByJobId(jobId)
+
+        this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, this.jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    if (value === true) {
+                        this.buttonLabel = 'Already Applied';
+                        this.hasApplied = true;
+                    }
+                }
+            );
+
+        this.jobService.getJobByJobId(this.jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
@@ -39,18 +60,24 @@ export class JobViewComponent implements OnInit, OnDestroy {
                 }
             );
 
-        this.jobService.getRecruiterIdByJobId(jobId)
+        this.jobService.getRecruiterIdByJobId(this.jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
+                    console.log(value);
                     this.ownsJob = value === this.user.id.toString();
                 }
             );
+        this.alreadyApplyChecking(this.jobId);
+        this.getRecommendationForJob();
+        this.getRecommendationForAppliedJob();
     }
 
     applyForJob(jobId: string): void {
-        const candidateId = '1';
-        this.jobService.postCandidateApplyForJob(candidateId, jobId)
+        const candidateId = this.user.id.toString();
+
+
+        /*this.jobService.postCandidateApplyForJob(candidateId, jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
@@ -63,7 +90,7 @@ export class JobViewComponent implements OnInit, OnDestroy {
                 () => {
                     console.log('Completed');
                 }
-            );
+            );*/
     }
 
     deleteJob(jobId: string): void {
@@ -71,9 +98,11 @@ export class JobViewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    if (value) {
+                    console.log(value);
+                    if (!value) {
                         setTimeout(() => {
                             console.log('Deleted..');
+                            this.router.navigate(['/jobs-manage']);
                         }, 500);
                     }
                 },
@@ -87,7 +116,59 @@ export class JobViewComponent implements OnInit, OnDestroy {
     }
 
     updateJob(jobId: string): void {
-        this.router.navigate([`jobs/job-update/edit/${jobId}`]);
+
+        this.router.navigate([`/job-update/edit/${jobId}`]);
+    }
+
+    getRecommendationForJob(): void {
+        this.jobService.getCandidateRecommendationForJob(this.candidateId, this.jobId)
+            .pipe(takeUntil(this.destroy$),
+                map((result) => {
+                    const items = result.map(e => {
+                        e.dontHave = e.totalSkillNames.filter(a => !e.haveSkillNames.includes(a));
+                        return e;
+                    });
+                    return items;
+                }))
+            .subscribe(
+                (value) => {
+                    this.recommendationForJob = value;
+                    this.jobRequires = value[0]?.totalSkillNames;
+                }
+            );
+    }
+
+    getRecommendationForAppliedJob(): void {
+        this.jobService.getCandidateRecommendationForAppliedJob(this.candidateId, this.jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    console.log(value);
+                }
+            );
+    }
+
+    alreadyApplyChecking(jobId: string): void {
+        if (!this.isRecruiter) {
+            this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, jobId)
+                .pipe(
+                    switchMap(value => {
+                        if (value === false) {
+                            return this.jobService.postCandidateApplyForJob(this.candidateId, jobId);
+                        } else {
+                            console.log('You have already applied for this job!');
+                            return of();
+                        }
+                    }),
+                    catchError(err => EMPTY),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe(
+                    (value) => {
+                        console.log('Congratulations! You just applied for this job! Step closer!');
+                    }
+                );
+        }
     }
 
     ngOnDestroy(): void {

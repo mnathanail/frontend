@@ -1,39 +1,84 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {JobModel} from '../../job-model';
-import {takeUntil} from 'rxjs/operators';
+import {catchError, switchMap, takeUntil} from 'rxjs/operators';
 import {JobService} from '../../service/job.service';
-import {Subject} from 'rxjs';
+import {EMPTY, of, Subject} from 'rxjs';
+import {TokenStorageService} from '../../../shared/service/token-storage.service';
+import {ProfileModel} from '../../../profile/profile-model';
 
 @Component({
     selector: 'app-job-search-item',
     templateUrl: './job-search-item.component.html',
     styleUrls: ['./job-search-item.component.css']
 })
-export class JobSearchItemComponent implements OnInit, OnDestroy {
+export class JobSearchItemComponent implements OnInit, OnDestroy, OnChanges {
 
     destroy$ = new Subject();
     @Input() jobItem: JobModel;
+    user: ProfileModel;
+    candidateId: string;
+    buttonLabel = 'Apply';
+    hasApplied = false;
+    loaded = false;
+    isRecruiter = false;
 
-    constructor(private jobService: JobService) {
+    constructor(private jobService: JobService,
+                private tokenService: TokenStorageService) {
+        this.user = (tokenService.getUser() as ProfileModel);
+        this.isRecruiter = tokenService.isRecruiter();
+        this.candidateId = this.user.id.toString();
     }
 
-    ngOnInit(): void {
-    }
-
-    applyForJob(jobId: string): void {
-        const candidateId = '1';
-        this.jobService.postCandidateApplyForJob(candidateId, jobId)
+    ngOnChanges(): void {
+        this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, this.jobItem.jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    console.log(value);
+                    this.loaded = true;
+                    if (value === true) {
+                        this.buttonLabel = 'Already Applied';
+                        this.hasApplied = true;
+                    }
+                    else{
+                        this.buttonLabel = 'Apply';
+                        this.hasApplied = false;
+                    }
+                }
+            );
+    }
+
+    ngOnInit(): void {
+        /*console.log(this.jobItem.jobId)
+        this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, this.jobItem.jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    if (value === true) {
+                        this.buttonLabel = 'Already Applied';
+                        this.hasApplied = true;
+                    }
+                }
+            );*/
+    }
+
+
+    applyForJob(jobId: string): void {
+        this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, jobId)
+            .pipe(
+                switchMap(value => {
+                    if (value === false) {
+                        return this.jobService.postCandidateApplyForJob(this.candidateId, jobId);
+                    } else {
+                        console.log('You have already applied for this job!');
+                        return of();
+                    }
+                }),
+                catchError(err => EMPTY),
+                takeUntil(this.destroy$)
+            )
+            .subscribe(
+                (value) => {
                     console.log('Congratulations! You just applied for this job! Step closer!');
-                },
-                error => {
-                    console.log('error');
-                },
-                () => {
-                    console.log('Completed');
                 }
             );
     }

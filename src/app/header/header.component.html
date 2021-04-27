@@ -1,6 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
     <div class="container">
-        <a class="navbar-brand" [routerLink]="['/']">Navbar</a>
+
+        <a class="navbar-brand" [routerLink]="['/']" *ngIf="loaded && isLoggedIn">Match & Staff</a>
+        <a class="navbar-brand" *ngIf="!loaded && !isLoggedIn">Match & Staff</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" [attr.aria-expanded]="!collapsed"
                 aria-label="Toggle navigation" (click)="collapsed = !collapsed" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false">
@@ -8,7 +10,10 @@
         </button>
         <div class="collapse navbar-collapse" [class.collapse]="collapsed" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active" *ngIf="isLoggedIn && _router.url.indexOf('job')=== -1">
+                <li class="nav-item active" *ngIf="loaded && isLoggedIn && isRecruiter">
+                    <a class="nav-link" [routerLink]="['search-for-candidate']">Search For Candidate <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active" *ngIf="loaded && isLoggedIn && _router.url.indexOf('job')=== -1">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">
@@ -30,10 +35,24 @@
                                [resultFormatter]="formatMatches">
                     </div>
                 </li>
-                <li class="nav-item active" *ngIf="isLoggedIn">
+                <li class="nav-item active" *ngIf="loaded && isLoggedIn">
                     <a class="nav-link" [routerLink]="['jobs']">Jobs <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item dropdown" ngbDropdown *ngIf="isLoggedIn">
+
+<!--                <li class="nav-item" *ngIf="loaded && isLoggedIn">
+                    <a class="pt-0 nav-link " *ngIf="loaded && profileId" (click)="onImgProfileClick()" >
+                        <span>{{model?.name}}</span>
+                        <img width="36"
+                             height="36"
+                             alt="{{model?.name}} profile"
+                             title="{{model?.name}} profile"
+                             class="rounded-circle img-fluid img-thumbnail"
+                             *ngIf="loaded && isLoggedIn"
+                             src="{{model?.image}}">
+                    </a>
+                </li>-->
+
+                <li class="nav-item dropdown" ngbDropdown *ngIf="loaded && isLoggedIn">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                        ngbDropdownToggle>
@@ -41,11 +60,11 @@
                     </a>
                     <div class="dropdown-menu mt-2 dropdown-menu-right" ngbDropdownMenu
                          aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" *ngIf="profileId" [routerLink]="['profile',profileId]">See your profile</a>
-                        <a class="dropdown-item" *ngIf="isCandidate" [routerLink]="['jobs-applied']">Jobs you have applied</a>
-                        <a class="dropdown-item" *ngIf="isRecruiter" [routerLink]="['jobs-manage']">Jobs you manage</a>
-                        <a class="dropdown-item" *ngIf="isRecruiter" [routerLink]="['job-posting']">Post a job</a>
-                        <a class="dropdown-item" *ngIf="isLoggedIn" [routerLink]="['logout']">Logout</a>
+                        <a class="dropdown-item" *ngIf="loaded && profileId" [routerLink]="['profile',profileId]">See your profile</a>
+                        <a class="dropdown-item" *ngIf="loaded && !isRecruiter" [routerLink]="['jobs-applied']">Jobs you have applied</a>
+                        <a class="dropdown-item" *ngIf="loaded && isRecruiter" [routerLink]="['jobs-manage']">Jobs you manage</a>
+                        <a class="dropdown-item" *ngIf="loaded && isRecruiter" [routerLink]="['job-posting']">Post a job</a>
+                        <a class="dropdown-item" *ngIf="loaded && isLoggedIn" [routerLink]="['logout']">Logout</a>
                     </div>
                 </li>
                 <li class="nav-item" *ngIf="!isLoggedIn">

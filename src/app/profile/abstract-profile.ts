@@ -8,12 +8,15 @@ import {ProfileModel} from './profile-model';
 export abstract class ProfileAbstract {
     user: ProfileModel;
     isOwner = false;
+    isRecruiter = false;
+
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,
         protected tokenService: TokenStorageService
     ) {
         this.isOwner = this.checkIfIsOwner();
+        this.isRecruiter = this.checkIfIsRecruiter();
     }
 
     getExperienceId(): string {
@@ -28,9 +31,12 @@ export abstract class ProfileAbstract {
         return this.route.snapshot.params.id;
     }
 
-     checkIfIsOwner(): boolean{
+    checkIfIsOwner(): boolean {
         this.user = (this.tokenService.getUser() as ProfileModel);
         return this.user.id.toString() === this.getCandidateId();
     }
 
+    checkIfIsRecruiter(): boolean {
+        return this.tokenService.isRecruiter();
+    }
 }

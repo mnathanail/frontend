@@ -37,9 +37,12 @@ import { SearchBySkillComponent } from './shared/skills/search/search-by-skill/s
 import { JobsAppliedComponent } from './jobs/jobs-applied/jobs-applied.component';
 import { JobsManageComponent } from './jobs/jobs-manage/jobs-manage.component';
 import {AngularEditorModule} from '@kolkov/angular-editor';
+import { SearchForCandidateComponent } from './search-for-candidate/search-for-candidate.component';
+import {ToastComponent} from './toast/toast.component';
 
 @NgModule({
     declarations: [
+        ToastComponent,
         AppComponent,
         LoginComponent,
         RegisterComponent,
@@ -70,6 +73,8 @@ import {AngularEditorModule} from '@kolkov/angular-editor';
         SearchBySkillComponent,
         JobsAppliedComponent,
         JobsManageComponent,
+        SearchForCandidateComponent,
+
     ],
     imports: [
         BrowserModule,

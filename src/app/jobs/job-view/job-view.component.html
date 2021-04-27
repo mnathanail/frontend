@@ -1,19 +1,82 @@
-<button class="btn btn-success" (click)="applyForJob(jobValue?.jobId)">
-    Apply
-</button> <br>
-{{jobValue?.jobId}} <br>
-{{jobValue?.jobTitle}} <br>
-{{jobValue?.description}} <br>
+<div class="border-5 p-4">
+    <div class="row">
+        <div class="col-12 pl-0">
+            <h3>
+                <span class="mr-2">{{jobValue?.jobTitle}}</span>
+                <span [ngbTooltip]="'Update Job'" *ngIf="isRecruiter && ownsJob" (click)="updateJob(jobValue?.jobId)">
+                    <i class="bi bi-arrow-repeat refresh-color"></i>
+                </span>
+                <span [ngbTooltip]="'Delete Job'" *ngIf="isRecruiter && ownsJob" (click)="deleteJob(jobValue?.jobId)">
+                    <i class="bi bi-trash trash-color"></i>
+                </span>
+            </h3>
+        </div>
+    </div>
+    <div class="row" *ngIf="!isRecruiter">
+        <div class="col-12 pb-3 pt-3">
+            <button class="btn btn-success btn-sm btn-block" [disabled]="hasApplied"
+                    (click)="applyForJob(jobValue?.jobId)">
+                {{buttonLabel}}
+            </button>
+        </div>
+    </div>
 
-<ul>
-    <li *ngFor="let jobSkill of jobValue?.requiredSkills;">
-        {{jobSkill.skillNode?.name}} - {{jobSkill?.yearsOfExperience}}
-    </li>
-</ul>
+    <div class="row">
+        <div class="" [innerHTML]="jobValue?.description"></div>
+    </div>
 
+    <div class="row mt-2">
+        <div class="col-12 pl-0">
+            <h4>Skills</h4>
+        </div>
 
-<div *ngIf="ownsJob">
-    <button class="btn btn-danger mr-1" (click)="deleteJob(jobValue?.jobId)">Delete</button>
-    <button class="btn btn-info ml-1" (click)="updateJob(jobValue?.jobId)">Update</button>
+        <ul class="list-group" *ngFor="let jobSkill of jobValue?.requiredSkills;">
+            <li class="list-group-item d-flex justify-content-between align-items-center m-1">
+                {{jobSkill?.skillNode?.name}}
+                <span ngbTooltip="Years of experience - {{jobSkill?.yearsOfExperience}}"
+                      class="badge badge-primary badge-pill ml-5">
+                {{jobSkill?.yearsOfExperience}}
+            </span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row" *ngIf="!isRecruiter">
+        <div class="col-12 pt-5">
+            <button class="btn btn-success btn-sm btn-block" [disabled]="hasApplied"
+                    (click)="applyForJob(jobValue?.jobId)">
+                {{buttonLabel}}
+            </button>
+        </div>
+    </div>
 </div>
-
+<br>
+<div *ngIf="isRecruiter && ownsJob">
+    <div class="row">
+        <div class="col-12 pl-4">
+            <h3>Show Candidates applied</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 pl-4">
+            <h3 class="text-decoration-line-through">Show Recommendations
+                <span>
+                    <i class="bi bi-arrow-repeat refresh-color"></i>
+                </span>
+            </h3>
+            <div *ngIf="jobRequires?.length">Job requires skills: {{jobRequires}} ({{jobRequires?.length}})</div>
+            <div *ngIf="recommendationForJob?.length">Total Recommendations: {{recommendationForJob?.length}}</div>
+            <div class="row">
+                <div class="p-2 col-lg-4 col-md-6 col-sm-6" *ngFor="let rfj of recommendationForJob;">
+                    <div class="card p-3 m-2">
+                        <div><a [routerLink]="['/profile/'+rfj?.candidateEntityId]">{{rfj?.candidateName}}</a>
+                        </div>
+                        <div>Candidate has: {{rfj?.haveSkillNames}} ({{rfj?.candidateSkillNumber}})</div>
+                        <div>Candidate has not: {{rfj?.dontHave}} ({{rfj.dontHave?.length}})</div>
+                        <div>Matching percentage: {{rfj?.percent * 100 }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

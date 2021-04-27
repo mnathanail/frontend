@@ -20,10 +20,12 @@
 
     </div>
     <br>
-    <button class="btn btn-success" (click)="applyForJob(jobItem?.jobId)">
-        Apply
-    </button>
+
+    <div *ngIf="!isRecruiter">
+        <button class="btn btn-success" *ngIf="loaded"  [disabled]="hasApplied" (click)="applyForJob(jobItem?.jobId)">
+            {{ buttonLabel }}
+        </button>
+    </div>
+
 </div>
 
-<!--
-{{this.jobItem | json }}-->

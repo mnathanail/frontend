@@ -77,9 +77,6 @@ export class ProfileEditEducationComponent extends ProfileAbstractEdit implement
 
     onSubmit(): void | boolean {
         this.submitted = true;
-        console.log(this.editEducationForm.value);
-        console.log(this.editEducationForm.valid);
-        return false;
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editEducationForm);
             const educationId = this.editEducationForm.get('educationId').value;

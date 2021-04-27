@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TokenStorageService} from '../shared/service/token-storage.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AuthenticationStatusService} from '../shared/events/authentication-status-service';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Observable, of, Subject} from 'rxjs';
@@ -27,6 +27,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     skillListLength: number;
     // tslint:disable-next-line:variable-name
     _router: Router;
+    loaded = false;
+    user: ProfileModel;
+    id: any;
     private destroy$ = new Subject();
 
     constructor(private tokenService: TokenStorageService,
@@ -39,18 +42,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.model = this.tokenService.getUser() as ProfileModel;
-        if (this.model) {
-            this.profileId = this.model.id;
-            const searchForCandidate = this.model.authorities.find(value => {
-                return value.authority === 'CANDIDATE';
-            });
-            const searchForRecruiter = this.model.authorities.find(value => {
-                return value.authority === 'RECRUITER';
-            });
-            this.isCandidate = searchForCandidate.authority;
-            this.isRecruiter = searchForRecruiter.authority;
-        }
     }
 
     authStatus(): void {
@@ -58,13 +49,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
+                    this.loaded = true;
                     this.isLoggedIn = value;
+                    this.model = this.tokenService.getUser() as ProfileModel;
+                    if (this.model) {
+                        this.profileId = this.model.id;
+                        const searchForCandidate = this.model.authorities.find(v => {
+                            return v.authority === 'CANDIDATE';
+                        });
+                        const searchForRecruiter = this.model.authorities.find(v => {
+                            return v.authority === 'RECRUITER';
+                        });
+                        this.isCandidate = searchForCandidate?.authority;
+                        this.isRecruiter = searchForRecruiter?.authority;
+                    }
                 },
                 error => {
                     this.authenticationStatus.setAuthenticationStatusError(error);
                 },
                 () => {
-
                 }
             );
     }
@@ -117,7 +120,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 this.searching = false;
             }),
             takeUntil(this.destroy$)
-        );
+        )
 
     formatMatches = (x: { name: string }) => x.name;
 

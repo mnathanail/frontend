@@ -10,7 +10,8 @@ export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
     private destroy$ = new Subject();
 
     constructor(private router: Router,
-                private tokenService: TokenStorageService) {
+                private tokenService: TokenStorageService,
+                private storageService: TokenStorageService) {
     }
 
 
@@ -26,6 +27,7 @@ export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
                         // server-side error
                         errorMessage = `Error Status: ${error.status}\nMessage: ${error.message}`;
                     }
+                    console.log(request)
                     console.log(error);
                     if (error.status === 401 || error.status === 403) {
                         // clear sessionStorage

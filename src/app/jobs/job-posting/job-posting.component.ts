@@ -8,8 +8,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {JobModel} from '../job-model';
 import {TokenStorageService} from '../../shared/service/token-storage.service';
 import {ProfileModel} from '../../profile/profile-model';
-import {Editor, Toolbar} from 'ngx-editor';
 import {AngularEditorConfig} from '@kolkov/angular-editor';
+import {RequiredSkill} from '../required-skill';
+import {FormsMethods} from '../../shared/forms/forms-methods';
+import {SkillModel} from '../../profile/profile-skill-list/profile-skill-item/skill-model';
 
 @Component({
     selector: 'app-job-posting',
@@ -25,8 +27,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     loaded = false;
     submitted = false;
     profileId: string;
-    private destroy$ = new Subject<any>();
-
+    t: RequiredSkill;
     editorConfig: AngularEditorConfig = {
         editable: true,
         spellcheck: true,
@@ -87,6 +88,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             ]
         ]
     };
+    private destroy$ = new Subject<any>();
 
     constructor(
         private skillService: SkillsService,
@@ -139,27 +141,27 @@ export class JobPostingComponent implements OnInit, OnDestroy {
 
     addRequiredSkills(e): void | boolean {
         const skills = this.jobPosting.get('requiredSkills') as FormArray;
-
         const exists = skills.value.some(el => el.name === e.item.name);
         if (exists) {
             console.log('Entry already exists');
             this._clearInputModel();
             return false;
         }
-
         if (e.item.name.trim().length > 0) {
-            skills.push(this.createSkillsFormGroup(e));
+            skills.push(this.createSkillsFormGroup(
+            {skillNode: {entityId: e?.item?.id, id: e?.item?.id, name: e?.item?.name}, yearsOfExperience: e?.item?.yearsOfExperience}
+            ));
             this._clearInputModel();
         }
     }
 
     onSubmit(): void | boolean {
         delete this.jobPosting.value.skillExcluded;
-
         this.submitted = true;
         console.log(this.jobPosting);
-        return false;
+
         if (this.editState) {
+            console.log(this.jobPosting.value);
             console.log(this.jobPosting.value);
             const jobId = this.activeRoute.snapshot.params.jobId;
             this.jobService.patchJob(this.jobPosting.value, this.profileId, jobId)
@@ -167,7 +169,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
                 .subscribe(
                     (value) => {
                         setTimeout(() => {
-                            this.router.navigate([`jobs/job-view/${value.jobId}`]);
+                            this.router.navigate([`job-view/${value.jobId}`]);
                         }, 500);
                     },
                     error => {
@@ -184,7 +186,8 @@ export class JobPostingComponent implements OnInit, OnDestroy {
                     (value) => {
                         console.log(value.jobId);
                         setTimeout(() => {
-                            this.router.navigate([`jobs/job-view/${value.jobId}`]);
+                            console.log(value.jobId);
+                            this.router.navigate([`job-view/${value.jobId}`]);
                         }, 500);
                     },
                     error => {
@@ -202,6 +205,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
+                    console.log(value);
                     if (value) {
                         console.log('Deleted!');
                     } else {
@@ -241,7 +245,18 @@ export class JobPostingComponent implements OnInit, OnDestroy {
 
     removeSkill(i: number): void {
         const skills = this.jobPosting.get('requiredSkills') as FormArray;
+        const obj = skills.get(i.toString()).value;
         skills.removeAt(i);
+        /*this.jobService.removeSkill(this.profileId, obj.skillNode.entityId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    if (value){
+                        skills.removeAt(i);
+                    }
+                }
+            );*/
+
     }
 
     ngOnDestroy(): void {
@@ -250,11 +265,12 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     }
 
     private createSkillsFormGroup(e): FormGroup {
-        const value = e.item;
+        const value = e?.skillNode;
+        console.log(e);
         return new FormGroup({
             id: new FormControl(value?.id),
             skillNode: new FormGroup({
-                entityId: new FormControl(value?.id || null),
+                entityId: new FormControl(value?.entityId || null),
                 name: new FormControl(value?.name),
             }),
             yearsOfExperience: new FormControl(value?.yearsOfExperience || 1)

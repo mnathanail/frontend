@@ -1,0 +1,14 @@
+span.dontHave {
+    text-decoration-line: line-through;
+}
+.trash-color {
+    color: #c82333;
+}
+
+.refresh-color{
+    color: #138496;
+}
+
+.border-5{
+    border: 5px solid #dee2e6 !important;
+}

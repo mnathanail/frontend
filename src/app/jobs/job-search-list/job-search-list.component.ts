@@ -23,8 +23,10 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
     page: Pageable;
     collectionSize: number;
     isActive = false;
+    hasApplied = false;
     thePageNumber = 1;
     userId: string;
+    isRecruiter = false;
     private destroy$ = new Subject<any>();
 
     constructor(private jobService: JobService,
@@ -33,6 +35,7 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                 private skillService: SkillsService,
                 private tokenService: TokenStorageService) {
         const user = this.tokenService.getUser() as ProfileModel;
+        this.isRecruiter = this.tokenService.isRecruiter();
         this.userId = user.id.toString();
     }
 
@@ -78,12 +81,18 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
         this.selectedJob = job;
         this.isActive = true;
         this.selectedItem = job;
+        this.jobService.checkIfAlreadyAppliedForJob(this.userId, job.jobId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                (value) => {
+                    this.hasApplied = value;
+                }
+            );
         return this.selectedJob;
     }
 
     applyForJob(jobId: string): void {
-        const candidateId = '1';
-        this.jobService.postCandidateApplyForJob(candidateId, jobId)
+        this.jobService.postCandidateApplyForJob(this.userId, jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {

@@ -7,7 +7,7 @@
                 <input aria-describedby="emailHelp" class="form-control" id="loginEmail" type="email"
                 formControlName="username" [ngClass]="{ 'is-invalid': submitted && f.username.invalid }">
                 <div class="invalid-feedback" *ngIf="submitted && f.username.invalid">
-                    <div *ngIf="submitted && f.username.errors?.dates">Field is required</div>
+                    <div *ngIf="submitted && f.username.errors?.required">Email is required</div>
                     <div *ngIf="f.username.errors.email">Email must be a valid email address</div>
                 </div>
             </div>
@@ -16,13 +16,13 @@
                 <input class="form-control" id="loginPassword" type="password"
                 formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.invalid }">
                 <div class="invalid-feedback" *ngIf="submitted && f.username.invalid">
-                    <div *ngIf="submitted && f.username.errors?.dates">Field is required</div>
+                    <div *ngIf="submitted && f.username.errors?.required">Password is required</div>
                 </div>
             </div>
-            <button class="btn btn-primary mr-1" type="submit">Submit</button>
-            <a class="btn btn-success" routerLink="/register" role="button">RegisterModel</a>
+
+            <a class="text-primary mr-1" routerLink="/register" role="button">New user?</a>
+            <button class="btn btn-success" type="submit">Login</button>
         </form>
     </div>
 </div>
-
 <app-loader></app-loader>

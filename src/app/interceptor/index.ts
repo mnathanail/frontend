@@ -6,5 +6,5 @@ import {Router} from '@angular/router';
 export const interceptors =
     [
         {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true},
-        {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
+        /*{provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},*/
     ];

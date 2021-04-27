@@ -89,7 +89,6 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
         this.submitted = true;
         console.log(this.editExperienceForm);
 
-        return false;
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
             const experienceId = this.editExperienceForm.get('experienceId').value;
@@ -150,8 +149,8 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
             period: new FormGroup({
                 startYear: new FormControl(value.period?.startYear),
                 startMonth: new FormControl(value.period?.startMonth),
-                endYear: new FormControl(value.period?.endYear),
-                endMonth: new FormControl(value.period?.endMonth)
+                endYear: new FormControl(value.period?.endYear || ''),
+                endMonth: new FormControl(value.period?.endMonth || '')
             }, {validators: DateLessThan('startYear', 'endYear')}),
             isCurrent: new FormControl(value.isCurrent),
             experienceId: new FormControl(value.experienceId)
