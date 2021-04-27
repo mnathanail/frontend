@@ -66,7 +66,7 @@ export class JobsAppliedComponent implements OnInit, OnDestroy, OnChanges {
                     this.loaded = true;
                 },
                 error => console.log(error),
-                () => console.log('Complete')
+                () => {}
             );
     }
 

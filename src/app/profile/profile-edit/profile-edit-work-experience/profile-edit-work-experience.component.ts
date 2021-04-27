@@ -87,7 +87,6 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
 
     onSubmit(): void | boolean{
         this.submitted = true;
-        console.log(this.editExperienceForm);
 
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editExperienceForm);
@@ -135,7 +134,6 @@ export class ProfileEditWorkExperienceComponent extends ProfileAbstractEdit impl
                     this.experienceMessages.setExperienceChangedError(error);
                 },
                 () => {
-                    console.log('completed!');
                     this.delayedModalClose();
                 });
     }

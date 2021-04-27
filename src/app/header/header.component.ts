@@ -73,7 +73,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     onEnter(value: any): void {
-        console.log(value);
         const params = value.split(',').map(e => e.trim());
         const options = {queryParams: {keywords: params}};
         this.router.navigate(['jobs/job-search'], options);

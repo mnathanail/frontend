@@ -44,7 +44,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 .subscribe(
                     (data) => {
                         if (data.headers != null && data.body != null && data.ok) {
-                            console.log(data);
                             const token = data.headers.get('Authorization');
                             this.tokenService.saveToken(token);
                             this.tokenService.saveUser(data.body as ProfileModel);

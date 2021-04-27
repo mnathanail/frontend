@@ -7,6 +7,8 @@ import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {TokenStorageService} from '../../shared/service/token-storage.service';
 import {ProfileModel} from '../../profile/profile-model';
 import {RecommendationExtendedModel} from '../../search-for-candidate/recommendation-extended-model';
+import {ToastService} from '../../toast/service/toast.service';
+import {Location} from '@angular/common';
 
 @Component({
     selector: 'app-job-view',
@@ -24,13 +26,16 @@ export class JobViewComponent implements OnInit, OnDestroy {
     isRecruiter = false;
     jobId: string;
     recommendationForJob: RecommendationExtendedModel[];
-    private destroy$ = new Subject<any>();
+    appliedWithReccomendationForJob: RecommendationExtendedModel[];
     jobRequires: any;
+    private destroy$ = new Subject<any>();
 
     constructor(private activeRoute: ActivatedRoute,
                 private router: Router,
                 private jobService: JobService,
-                private tokenService: TokenStorageService) {
+                private tokenService: TokenStorageService,
+                private toastService: ToastService,
+                private location: Location) {
 
         this.user = (tokenService.getUser() as ProfileModel);
         this.isRecruiter = tokenService.isRecruiter();
@@ -55,7 +60,6 @@ export class JobViewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    console.log(value);
                     this.jobValue = value;
                 }
             );
@@ -64,33 +68,36 @@ export class JobViewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    console.log(value);
                     this.ownsJob = value === this.user.id.toString();
                 }
             );
         this.alreadyApplyChecking(this.jobId);
-        this.getRecommendationForJob();
-        this.getRecommendationForAppliedJob();
+        if (this.isRecruiter) {
+            this.getRecommendationForJob();
+            this.getRecommendationForAppliedJob();
+        }
     }
 
     applyForJob(jobId: string): void {
         const candidateId = this.user.id.toString();
 
-
-        /*this.jobService.postCandidateApplyForJob(candidateId, jobId)
+        this.jobService.postCandidateApplyForJob(candidateId, jobId)
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
                     console.log(value);
-                    console.log('Congratulations! You just applied for this job! Step closer!');
+                    this.toastService.show(
+                        'Congratulations! You just applied for this job! Step closer!',
+                        {classname: 'bg-success text-light'}
+                    );
+                    this.buttonLabel = 'Already Applied';
+                    this.hasApplied = true;
                 },
                 error => {
                     console.log('error');
                 },
-                () => {
-                    console.log('Completed');
-                }
-            );*/
+                () => {}
+            );
     }
 
     deleteJob(jobId: string): void {
@@ -98,10 +105,9 @@ export class JobViewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    console.log(value);
                     if (!value) {
+                        this.toastService.show('Deleted', {classname: 'bg-success text-light'});
                         setTimeout(() => {
-                            console.log('Deleted..');
                             this.router.navigate(['/jobs-manage']);
                         }, 500);
                     }
@@ -110,7 +116,6 @@ export class JobViewComponent implements OnInit, OnDestroy {
                     console.log('Error');
                 },
                 () => {
-                    console.log('Completed');
                 }
             );
     }
@@ -140,10 +145,18 @@ export class JobViewComponent implements OnInit, OnDestroy {
 
     getRecommendationForAppliedJob(): void {
         this.jobService.getCandidateRecommendationForAppliedJob(this.candidateId, this.jobId)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this.destroy$),
+                map((result) => {
+                    const items = result.map(e => {
+                        e.dontHave = e.totalSkillNames.filter(a => !e.haveSkillNames.includes(a));
+                        return e;
+                    });
+                    return items;
+                }))
             .subscribe(
                 (value) => {
                     console.log(value);
+                    this.appliedWithReccomendationForJob = value;
                 }
             );
     }
@@ -152,20 +165,23 @@ export class JobViewComponent implements OnInit, OnDestroy {
         if (!this.isRecruiter) {
             this.jobService.checkIfAlreadyAppliedForJob(this.candidateId, jobId)
                 .pipe(
-                    switchMap(value => {
+                  /*  switchMap(value => {
                         if (value === false) {
                             return this.jobService.postCandidateApplyForJob(this.candidateId, jobId);
                         } else {
-                            console.log('You have already applied for this job!');
                             return of();
                         }
                     }),
-                    catchError(err => EMPTY),
+                    catchError(err => EMPTY),*/
                     takeUntil(this.destroy$)
                 )
                 .subscribe(
                     (value) => {
-                        console.log('Congratulations! You just applied for this job! Step closer!');
+                        /*this.toastService.show(
+                            'Congratulations! You just applied for this job! Step closer!',
+                            {classname: 'bg-success text-light'}
+                        );*/
+                        console.log(value);
                     }
                 );
         }
@@ -174,5 +190,9 @@ export class JobViewComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.unsubscribe();
+    }
+
+    goBack(): void {
+        this.location.back();
     }
 }

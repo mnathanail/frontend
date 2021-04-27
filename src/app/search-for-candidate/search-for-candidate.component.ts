@@ -92,9 +92,8 @@ export class SearchForCandidateComponent implements OnInit, OnDestroy {
         skills.removeAt(id);
     }
 
-    onSave() {
+    onSave(): void {
         delete this.searchCandidates.value.excludedSkill;
-        console.log(this.searchCandidates.value)
     }
 
     ngOnDestroy(): void {

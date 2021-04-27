@@ -222,9 +222,7 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                 error => {
                     this.skillMessages.setSkillChangedError(error);
                 },
-                () => {
-                    console.log('completed!');
-                }
+                () => {}
             );
     }
 
@@ -251,7 +249,6 @@ export class ProfileEditSkillsComponent extends ProfileAbstractEdit implements O
                         this.skillMessages.setSkillChangedError(error);
                     },
                     () => {
-                        console.log('complete');
                         this.delayedModalClose();
                     }
                 );

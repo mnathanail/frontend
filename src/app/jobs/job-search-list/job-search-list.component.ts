@@ -60,14 +60,11 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                             this.selectedItem = val.content[0];
                             this.page = val.pageable;
                             this.collectionSize = val.totalElements;
-                            console.log(val);
                         },
                         error => {
                             console.log(error);
                         },
-                        () => {
-                            console.log('Completed!');
-                        }
+                        () => {}
                     );
             });
     }
@@ -102,9 +99,7 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                 error => {
                     console.log('error');
                 },
-                () => {
-                    console.log('Completed');
-                }
+                () => {}
             );
     }
 

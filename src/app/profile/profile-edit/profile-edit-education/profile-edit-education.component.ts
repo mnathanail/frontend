@@ -80,12 +80,10 @@ export class ProfileEditEducationComponent extends ProfileAbstractEdit implement
         if (this.editState) {
             const a = FormsMethods.getDirtyValues(this.editEducationForm);
             const educationId = this.editEducationForm.get('educationId').value;
-            console.log(a);
             this.educationService.patchEducation(a as EducationModel, this.candidateId, educationId)
                 /*.filter(delay(500))*/
                 .pipe(takeUntil(this.destroy$))
                 .subscribe((value) => {
-                        console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.UPDATE, data: value});
                     },
                     error => {
@@ -101,7 +99,6 @@ export class ProfileEditEducationComponent extends ProfileAbstractEdit implement
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
-                        console.log(value);
                         this.educationMessages.setEducationChanged({type: CrudEventsModel.POST, data: value});
                     },
                     error => {
@@ -126,7 +123,6 @@ export class ProfileEditEducationComponent extends ProfileAbstractEdit implement
                     this.educationMessages.setEducationChangedError(error);
                 },
                 () => {
-                    console.log('completed!');
                     this.delayedModalClose();
                 });
     }

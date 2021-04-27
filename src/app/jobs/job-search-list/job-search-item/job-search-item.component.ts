@@ -5,6 +5,7 @@ import {JobService} from '../../service/job.service';
 import {EMPTY, of, Subject} from 'rxjs';
 import {TokenStorageService} from '../../../shared/service/token-storage.service';
 import {ProfileModel} from '../../../profile/profile-model';
+import {ToastService} from '../../../toast/service/toast.service';
 
 @Component({
     selector: 'app-job-search-item',
@@ -23,7 +24,8 @@ export class JobSearchItemComponent implements OnInit, OnDestroy, OnChanges {
     isRecruiter = false;
 
     constructor(private jobService: JobService,
-                private tokenService: TokenStorageService) {
+                private tokenService: TokenStorageService,
+                private toastService: ToastService) {
         this.user = (tokenService.getUser() as ProfileModel);
         this.isRecruiter = tokenService.isRecruiter();
         this.candidateId = this.user.id.toString();
@@ -69,7 +71,10 @@ export class JobSearchItemComponent implements OnInit, OnDestroy, OnChanges {
                     if (value === false) {
                         return this.jobService.postCandidateApplyForJob(this.candidateId, jobId);
                     } else {
-                        console.log('You have already applied for this job!');
+                        this.toastService.show(
+                            'You have already applied for this job!',
+                            {classname: 'bg-warning text-light'}
+                        );
                         return of();
                     }
                 }),
@@ -78,7 +83,10 @@ export class JobSearchItemComponent implements OnInit, OnDestroy, OnChanges {
             )
             .subscribe(
                 (value) => {
-                    console.log('Congratulations! You just applied for this job! Step closer!');
+                    this.toastService.show(
+                        'Congratulations! You just applied for this job! Step closer! :D',
+                        {classname: 'bg-success text-light'}
+                    );
                 }
             );
     }

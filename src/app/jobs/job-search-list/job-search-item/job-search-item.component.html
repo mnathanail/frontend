@@ -1,15 +1,15 @@
 <div class="card border-0">
     <div class="tab-content" *ngIf="jobItem">
         <div class="tab-pane active" id="home" role="tabpanel">
-            <h3>
+            <h4>
                 <a routerLink="../../job-view/{{jobItem.jobId}}">
                     {{jobItem?.jobTitle}}
                 </a>
-            </h3>
+            </h4>
         </div>
     </div>
     <div class="card-body">
-        <p class="card-text">{{jobItem?.description}}</p>
+        <p class="card-text" [innerHTML]="jobItem?.description"></p>
 
         <ul class="list-group" *ngFor="let skill of jobItem?.requiredSkills">
             <li class="list-group-item d-flex justify-content-between align-items-center">

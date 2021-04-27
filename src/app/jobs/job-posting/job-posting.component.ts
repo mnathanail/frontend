@@ -12,6 +12,7 @@ import {AngularEditorConfig} from '@kolkov/angular-editor';
 import {RequiredSkill} from '../required-skill';
 import {FormsMethods} from '../../shared/forms/forms-methods';
 import {SkillModel} from '../../profile/profile-skill-list/profile-skill-item/skill-model';
+import {ToastService} from '../../toast/service/toast.service';
 
 @Component({
     selector: 'app-job-posting',
@@ -96,6 +97,7 @@ export class JobPostingComponent implements OnInit, OnDestroy {
         private router: Router,
         private activeRoute: ActivatedRoute,
         private tokenService: TokenStorageService,
+        private toastService: ToastService
     ) {
         this.editState = this.router.url.indexOf('edit') > 0;
         this.profileId = (this.tokenService.getUser() as ProfileModel).id.toString();
@@ -118,7 +120,6 @@ export class JobPostingComponent implements OnInit, OnDestroy {
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
-                        console.log(this.jobPosting);
                         this.loaded = true;
                         this.formInit(value);
                     }
@@ -141,9 +142,12 @@ export class JobPostingComponent implements OnInit, OnDestroy {
 
     addRequiredSkills(e): void | boolean {
         const skills = this.jobPosting.get('requiredSkills') as FormArray;
-        const exists = skills.value.some(el => el.name === e.item.name);
+        const exists = skills.value.some(el =>  el.skillNode.name === e.item.name);
         if (exists) {
-            console.log('Entry already exists');
+            this.toastService.show(
+                'Skill has been already added to your list.',
+                {classname: 'bg-warning text-light'}
+            );
             this._clearInputModel();
             return false;
         }
@@ -158,11 +162,8 @@ export class JobPostingComponent implements OnInit, OnDestroy {
     onSubmit(): void | boolean {
         delete this.jobPosting.value.skillExcluded;
         this.submitted = true;
-        console.log(this.jobPosting);
 
         if (this.editState) {
-            console.log(this.jobPosting.value);
-            console.log(this.jobPosting.value);
             const jobId = this.activeRoute.snapshot.params.jobId;
             this.jobService.patchJob(this.jobPosting.value, this.profileId, jobId)
                 .pipe(takeUntil(this.destroy$))
@@ -175,27 +176,21 @@ export class JobPostingComponent implements OnInit, OnDestroy {
                     error => {
                         console.log(error);
                     },
-                    () => {
-                        console.log('Completed');
-                    }
+                    () => {}
                 );
         } else {
             this.jobService.saveJob(this.profileId, this.jobPosting.value)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (value) => {
-                        console.log(value.jobId);
                         setTimeout(() => {
-                            console.log(value.jobId);
                             this.router.navigate([`job-view/${value.jobId}`]);
                         }, 500);
                     },
                     error => {
                         console.log(error);
                     },
-                    () => {
-                        console.log('Completed');
-                    }
+                    () => {}
                 );
         }
     }
@@ -205,11 +200,16 @@ export class JobPostingComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(
                 (value) => {
-                    console.log(value);
                     if (value) {
-                        console.log('Deleted!');
+                        this.toastService.show(
+                            'Deleted!',
+                            {classname: 'bg-success text-light'}
+                        );
                     } else {
-                        console.log('Was Not Deleted..');
+                        this.toastService.show(
+                            'Did not deleted! :(',
+                            {classname: 'bg-error text-light'}
+                        );
                     }
                 }
             );
@@ -266,7 +266,6 @@ export class JobPostingComponent implements OnInit, OnDestroy {
 
     private createSkillsFormGroup(e): FormGroup {
         const value = e?.skillNode;
-        console.log(e);
         return new FormGroup({
             id: new FormControl(value?.id),
             skillNode: new FormGroup({
@@ -281,5 +280,10 @@ export class JobPostingComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             this.jobPosting.get('skillExcluded').setValue('');
         }, 200);
+    }
+
+    goBack(): void {
+        const jobId = this.activeRoute.snapshot.params.jobId;
+        this.router.navigate([`/job-view/${jobId}`]);
     }
 }

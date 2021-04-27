@@ -8,12 +8,10 @@ export class UrlParameterService {
     }
 
     getCandidateId(): Params {
-        console.log(this.router.getCurrentNavigation().id);
         return this.route.snapshot.params;
     }
 
     getExperienceArrayId(): Params {
-        console.log(this.router.getCurrentNavigation());
         return this.route.snapshot.params;
     }
 }

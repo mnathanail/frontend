@@ -41,7 +41,7 @@ export class JobsManageComponent implements OnInit {
                     this.loaded = true;
                 },
                 error => console.log(error),
-                () => console.log('Complete')
+                () => {}
             );
     }
 }

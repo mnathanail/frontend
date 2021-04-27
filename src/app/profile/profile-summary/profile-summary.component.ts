@@ -60,9 +60,7 @@ export class ProfileSummaryComponent extends ProfileAbstract implements OnInit, 
             error => {
                 this.summaryService.getMessages().setSummaryChangedError(error);
             },
-            () => {
-                console.log('completed!'); // this.profileService.setSummaryChangedComplete();
-            }
+            () => {}
         );
     }
 

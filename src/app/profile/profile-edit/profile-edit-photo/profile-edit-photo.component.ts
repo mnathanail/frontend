@@ -76,7 +76,6 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
             const [file] = e.target.files;
 
             if (this.isFileImage(file) === false) {
-                console.log('upload specific type photo!');
                 this.toastService.show('Please try png or jpeg!', {
                     classname: 'bg-danger text-light',
                 });
@@ -93,7 +92,6 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
 
                     if (height > 510 || width > 510) {
                         valid = false;
-                        console.log('invalid dimensions');
                         this.toastService.show('Invalid dimensions. Try max 510x510!', {
                             classname: 'bg-danger text-light',
                         });
@@ -121,9 +119,7 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
                 error => {
                     this.profileMessages.setPhotoChangedError(error);
                 },
-                () => {
-                    console.log('completed!');
-                }
+                () => {}
             );
     }
 
