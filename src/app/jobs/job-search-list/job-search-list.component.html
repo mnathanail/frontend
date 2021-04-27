@@ -1,7 +1,7 @@
 <div class="row" *ngIf="loaded && jobModel.length>0; else nothingFound;">
     <div class="col-4">
         <div class="list-group">
-            <a class="list-group-item list-group-item-action flex-column align-items-start"
+            <a class="list-group-item list-group-item-action flex-column align-items-start list-item-height"
                [class.active]=" selectedItem === job"
                *ngFor="let job of jobModel; let i = index;" (click)="selected(job);">
                 <!--<div class="d-flex w-100 justify-content-between">
@@ -10,9 +10,8 @@
                 </div>
                 <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
                 <small>Donec id elit non mi porta.</small>-->
-                {{job.description}}
-                {{job.jobTitle}}
-                {{job.jobId}}
+                <h4>{{job.jobTitle}}</h4>
+                <div [innerHTML]="job?.description"></div>
             </a>
         </div>
     </div>

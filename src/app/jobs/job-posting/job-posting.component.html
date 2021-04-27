@@ -1,3 +1,11 @@
+<div class="row mr-1">
+    <div class="ml-auto">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">
+            <i ngbTooltip="Go back" class="bi bi-arrow-90deg-left bi--1xl"></i>
+        </button>
+    </div>
+</div>
+
 <form [formGroup]="jobPosting" (ngSubmit)="onSubmit()" *ngIf="loaded">
     <div class="mb-3">
         <label for="jobTitle" class="form-label">Job Title</label>
@@ -78,4 +86,5 @@
 
     <button type="reset" class="btn btn-danger mr-1">Reset Form</button>
     <button type="submit" class="btn btn-success ml-1">Submit</button>
+
 </form>

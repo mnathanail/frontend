@@ -55,7 +55,6 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     addParameters(skill: string, yoe: number): void {
         this.parameters.push({skill, yoe});
-        console.log(this.parameters);
     }
 
     search = (text$: Observable<string>) =>

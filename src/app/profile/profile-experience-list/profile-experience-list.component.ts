@@ -62,6 +62,7 @@ export class ProfileExperienceListComponent extends ProfileAbstract implements O
                         }
                         case CrudEventsModel.DELETE: {
                             if (this.jobs) {
+                                console.log('DELETE');
                                 const index = this.jobs.findIndex(job => job.experienceId === value.data.experienceId);
                                 if (index !== -1) {
                                     this.jobs.splice(index, 1);
@@ -77,9 +78,8 @@ export class ProfileExperienceListComponent extends ProfileAbstract implements O
                 error => {
                     console.log(error);
                 },
-                () => {
-
-                });
+                () => {}
+            );
     }
 
     onAddExperience(): void {

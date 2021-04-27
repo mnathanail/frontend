@@ -1,0 +1,64 @@
+<div class="container">
+    <form [formGroup]="searchCandidates" (ngSubmit)="onSave()">
+        <div class="input-group">
+            <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">
+                <i class="bi bi-search"></i>
+            </span>
+            </div>
+            <input type="text"
+                   class="form-control"
+                   formControlName="excludedSkill"
+                   placeholder="Search By Skill(s).."
+                   #skill
+                   [ngbTypeahead]="search"
+                   [inputFormatter]="formatMatches"
+                   [resultFormatter]="formatMatches"
+                   (selectItem)="addSkill($event);">
+            <!--<button class="btn btn-success" (click)="addSkill($event)">
+                Search
+            </button>-->
+        </div>
+        <small class="form-text text-muted">For accurate results please either search only by one skill or use comma to
+            separate multiple skills</small>
+        <br>
+
+
+        I am searching for a skilled candidate having
+
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex align-content-start flex-wrap">
+                    <div class="pr-2 pb-1" formArrayName="skills"
+                         *ngFor="let skill of aliases.controls; let i = index;">
+                        <ng-container [formGroupName]="i">
+                            <div class="input-group mb-3">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary btn-sm" type="button">
+                                        <span>{{skill.get('name').value}}</span>
+                                        <span (click)="removeSelectedSkill(i)">
+                                                    <i class="bi bi-x"></i>
+                                                </span>
+                                    </button>
+                                </div>
+                                <input type="number"
+                                       formControlName="yearsOfExperience"
+                                       min="1"
+                                       class="form-control yearsOfExperience"
+                                >
+                                <input type="hidden" formControlName="name">
+                                <input type="hidden" formControlName="id">
+                                <input type="hidden" formControlName="entityId">
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-success">Save</button>
+            <button type="button" class="btn btn-outline-dark">Dismiss</button>
+        </div>
+    </form>
+</div>

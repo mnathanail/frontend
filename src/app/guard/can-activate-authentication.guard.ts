@@ -22,6 +22,11 @@ export class CanActivateAuthenticationGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+        if (!!this.tokenService.getToken() === false) {
+            this.router.navigate(['/login']);
+            return false;
+        }
+
         let hasRole;
         if (!!this.tokenService.getToken()) {
             this.authenticationStatus.setAuthenticationStatus(!!this.tokenService.getToken());
@@ -32,7 +37,7 @@ export class CanActivateAuthenticationGuard implements CanActivate {
             const t = (route.data.authorities as []);
             if (t !== undefined) {
                 hasRole = t.filter(value => this.user.authorities.some(i => i.authority.includes(value)));
-                console.log(hasRole);
+                // console.log(hasRole);
                 return true;
                 //return hasRole.length > 0;
             } else {

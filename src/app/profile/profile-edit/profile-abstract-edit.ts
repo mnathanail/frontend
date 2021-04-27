@@ -60,11 +60,11 @@ export abstract class ProfileAbstractEdit implements OnDestroy {
     }
 
     getExperienceId(): string {
-        return this.route.parent.snapshot.params.expId;
+        return this.route.snapshot.params.expId;
     }
 
     getEducationId(): string {
-        return this.route.parent.snapshot.params.eduId;
+        return this.route.snapshot.params.eduId;
     }
 
     getCandidateId(): string {

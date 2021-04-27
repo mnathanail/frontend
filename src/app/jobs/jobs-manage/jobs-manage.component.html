@@ -1,13 +1,10 @@
 <div *ngIf="loaded && jobList.length>0">
     <ul class="list-group">
-        <li class="list-group-item" *ngFor="let item of jobList">
-            <h3><a [routerLink]="['../job-view/'+item.jobId]">
-                {{item.jobTitle}}
-            </a>
+        <li class="list-group-item list-item-height overflow-hidden mb-3 border-top" *ngFor="let item of jobList">
+            <h3 class="mb-4">
+                <a [routerLink]="['../job-view/'+item?.jobId]">{{item?.jobTitle}}</a>
             </h3>
-            <br>
-            {{item.jobId}} <br>
-            <div class="text-truncate">{{item.description}}</div>
+            <div class="text-truncate fade-description-list" [innerHTML]="item?.description"></div>
             <br>
         </li>
     </ul>

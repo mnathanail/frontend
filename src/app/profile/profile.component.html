@@ -22,36 +22,38 @@
                 <div class="widget head-profile has-shadow">
                     <div class="widget-body pb-0">
                         <div class="row d-flex align-items-center">
-                            <div
-                                class="col-xl-4 col-md-4 d-flex justify-content-lg-start justify-content-md-start justify-content-center">
-                                what about a quote?
+                            <div class="col-xl-4 col-md-4 d-flex justify-content-lg-start
+                                        justify-content-md-start
+                                        justify-content-center">
                             </div>
                             <div class="col-xl-4 col-md-4 d-flex justify-content-center">
                                 <div class="image-default">
-
-                                    <img class="rounded-circle img-fluid img-thumbnail" *ngIf="loaded && results?.image; else emptyImage;" [src]="results?.image">
+                                    <img class="rounded-circle img-fluid img-thumbnail"
+                                         *ngIf="loaded && results?.image;
+                                         else emptyImage;"
+                                         [src]="profilePic">
                                     <ng-template #emptyImage>
-                                        <img class="rounded-circle img-fluid img-thumbnail">
+                                        <img class="rounded-circle img-fluid img-thumbnail" src="{{defaultProfileIcon}}">
                                     </ng-template>
 
                                 <a (click)="profilePhotoAction()" *ngIf="isOwner">
                                     <div class="svgContainer">
-                                        <i class="bi bi-camera camera bi--xl m-1"></i>
+                                        <i class="bi bi-camera camera bi--lg m-2"></i>
                                     </div>
                                 </a>
                                 </div>
                                 <div class="infos">
                                     <h2>{{results?.name}} {{results?.surname}}</h2>
-                                    <div class="location">Las Vegas, Nevada, U.S.</div>
+                                    <span *ngIf="isRecruiter">(Recruiter)</span>
                                 </div>
                             </div>
-                            <div
+                            <div *ngIf="isOwner"
                                 class="col-xl-4 col-md-4 d-flex justify-content-lg-end justify-content-md-end justify-content-center">
                                 <div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                             appDropdown #ref="appDropdown">
-                                        Add / Edit Profile Section
+                                        Add profile section
                                     </button>
                                     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" [ngClass]="{'show':ref.getToggle}">
                                         <a class="dropdown-item" (click)="profilePhotoAction()">Profile photo</a>

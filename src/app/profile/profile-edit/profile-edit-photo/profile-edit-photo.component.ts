@@ -20,6 +20,8 @@ import {ProfileService} from '../../service/profile/profile.service';
 import {ProfileModel} from '../../profile-model';
 import {ProfileAbstractEdit} from '../profile-abstract-edit';
 import {takeUntil} from 'rxjs/operators';
+import {TokenStorageService} from '../../../shared/service/token-storage.service';
+import {ToastService} from '../../../toast/service/toast.service';
 
 @Component({
     selector: 'app-profile-edit-photo',
@@ -47,7 +49,8 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
                 // private platformLocation: PlatformLocation,
                 private platformLocation: LocationStrategy,
                 private profileService: ProfileService,
-                private profileMessages: ProfileMessagesService
+                private profileMessages: ProfileMessagesService,
+                private toastService: ToastService
     ) {
         super(config, modalService, router, route);
 
@@ -73,7 +76,9 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
             const [file] = e.target.files;
 
             if (this.isFileImage(file) === false) {
-                console.log('upload specific type photo!');
+                this.toastService.show('Please try png or jpeg!', {
+                    classname: 'bg-danger text-light',
+                });
             }
 
             reader.readAsDataURL(file);
@@ -85,9 +90,11 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
                     height = img.naturalHeight;
                     width = img.naturalWidth;
 
-                    if (height > 500 || width > 500) {
+                    if (height > 510 || width > 510) {
                         valid = false;
-                        console.log('invalid dimensions');
+                        this.toastService.show('Invalid dimensions. Try max 510x510!', {
+                            classname: 'bg-danger text-light',
+                        });
                         return false;
                     }
                     if (valid) {
@@ -112,9 +119,7 @@ export class ProfileEditPhotoComponent extends ProfileAbstractEdit implements On
                 error => {
                     this.profileMessages.setPhotoChangedError(error);
                 },
-                () => {
-                    console.log('completed!');
-                }
+                () => {}
             );
     }
 

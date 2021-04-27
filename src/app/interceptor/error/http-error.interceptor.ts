@@ -10,7 +10,8 @@ export class HttpErrorInterceptor implements HttpInterceptor, OnDestroy {
     private destroy$ = new Subject();
 
     constructor(private router: Router,
-                private tokenService: TokenStorageService) {
+                private tokenService: TokenStorageService,
+                private storageService: TokenStorageService) {
     }
 
 

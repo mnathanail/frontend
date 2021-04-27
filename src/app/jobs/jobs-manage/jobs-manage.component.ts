@@ -16,10 +16,12 @@ export class JobsManageComponent implements OnInit {
     profileId: string;
     jobList: JobModel[];
     loaded = false;
+    isRecruiter = false;
     private destroy$ = new Subject();
 
     constructor(private tokenService: TokenStorageService,
                 private jobService: JobService) {
+        this.isRecruiter = this.tokenService.isRecruiter();
         this.profileId = (this.tokenService.getUser() as ProfileModel).id.toString();
     }
 
@@ -39,7 +41,7 @@ export class JobsManageComponent implements OnInit {
                     this.loaded = true;
                 },
                 error => console.log(error),
-                () => console.log('Complete')
+                () => {}
             );
     }
 }

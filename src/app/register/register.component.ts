@@ -37,8 +37,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     onRegister(): void | boolean{
         this.submitted = true;
-        console.log(this.registerForm.value);
-
         if (this.registerForm.valid) {
             delete this.registerForm.value.confirmPassword;
             this.registerService.onRegister(this.registerForm.value)
@@ -46,7 +44,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 .subscribe(
                     (data) => {
                         if (data.headers != null && data.body != null && data.ok) {
-                            console.log(data);
                             const token = data.headers.get('Authorization');
                             this.tokenService.saveToken(token);
                             this.tokenService.saveUser(data.body as ProfileModel);
@@ -57,8 +54,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
                     }
                 );
         }
-
-
     }
 
     get f(): { [p: string]: AbstractControl } { return this.registerForm.controls; }

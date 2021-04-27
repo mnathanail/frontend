@@ -15,14 +15,15 @@ import {JobViewComponent} from '../jobs/job-view/job-view.component';
 import {JobSearchListComponent} from '../jobs/job-search-list/job-search-list.component';
 import {CanActivateAuthenticationGuard as authenticationGuard} from '../guard/can-activate-authentication.guard';
 import {LogoutComponent} from '../logout/logout.component';
-import {CanActivateChildAuthorizationGuard} from '../guard/can-activate-child-authorization.guard';
 import {JobsAppliedComponent} from '../jobs/jobs-applied/jobs-applied.component';
 import {JobsManageComponent} from '../jobs/jobs-manage/jobs-manage.component';
+import {SearchForCandidateComponent} from '../search-for-candidate/search-for-candidate.component';
 
 const appRouting: Routes = [
     {path: 'login', component: LoginComponent},
     {path: 'logout', component: LogoutComponent},
     {path: 'register', component: RegisterComponent},
+    /*{path: '', component: AppComponent, canActivate: [authenticationGuard]},*/
     {
         path: 'profile/:id', component: ProfileComponent, canActivate: [authenticationGuard],
         children: [
@@ -38,14 +39,20 @@ const appRouting: Routes = [
             {path: 'edit/edit-experience-profile/:expId', component: ProfileEditWorkExperienceComponent},
             {path: 'new/new-experience-profile', component: ProfileEditWorkExperienceComponent},
             {path: 'add/add-skills-profile', component: ProfileEditSkillsComponent},
-            {path: 'edit/edit-skills-profile', component: ProfileEditSkillsComponent,},
+            {path: 'edit/edit-skills-profile', component: ProfileEditSkillsComponent},
         ]
     },
     {
-        path: 'jobs', component: JobsComponent, canActivate: [authenticationGuard], canActivateChild: [CanActivateChildAuthorizationGuard],
+        path: 'jobs', component: JobsComponent, canActivate: [authenticationGuard],
         children: [
             {path: 'job-search', component: JobSearchListComponent}
         ]
+    },
+    {
+        path: 'search-for-candidate',
+        component: SearchForCandidateComponent,
+        canActivate: [authenticationGuard],
+        data: {authorities: ['RECRUITER', 'CANDIDATE']}
     },
     {
         path: 'job-posting',
@@ -57,9 +64,14 @@ const appRouting: Routes = [
         path: 'job-update/edit/:jobId',
         component: JobPostingComponent,
         canActivate: [authenticationGuard],
-        data: {authorities: ['RECRUITER']}
+        data: {authorities: ['RECRUITER']},
     },
-    {path: 'job-view/:jobId', component: JobViewComponent, canActivate: [authenticationGuard], data: {authorities: ['RECRUITER']} },
+    {
+        path: 'job-view/:jobId',
+        component: JobViewComponent,
+        canActivate: [authenticationGuard],
+        data: {authorities: ['RECRUITER', 'CANDIDATE']}
+    },
     {path: 'jobs-applied', component: JobsAppliedComponent, canActivate: [authenticationGuard], data: {authorities: ['CANDIDATE']}},
     {path: 'jobs-manage', component: JobsManageComponent, canActivate: [authenticationGuard], data: {authorities: ['RECRUITER']}},
     {path: '', redirectTo: '/', pathMatch: 'full'},

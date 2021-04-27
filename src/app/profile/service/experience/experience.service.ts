@@ -42,7 +42,7 @@ export class ExperienceService {
         const params = new HttpParams()
             .set('candidateId', candidateId)
             .set('experienceId', experienceId);
-        return this.http.patch<ExperienceModel>(url, experienceModel);
+        return this.http.patch<ExperienceModel>(url, experienceModel, {params});
     }
 
     deleteExperience(candidateId: string, experienceId: string): Observable<boolean> {
