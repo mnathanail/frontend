@@ -33,7 +33,7 @@ export class ProfileEducationListComponent extends ProfileAbstract implements On
     ) {
         super(router, route, tokenService);
         this.candidateId = this.getCandidateId();
-        this.checkIfIsOwner();
+        this.isOwner = this.checkIfIsOwner();
     }
 
     ngOnInit(): void {

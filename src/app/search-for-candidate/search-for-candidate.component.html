@@ -19,13 +19,9 @@
                 Search
             </button>-->
         </div>
-        <small class="form-text text-muted">For accurate results please either search only by one skill or use comma to
-            separate multiple skills</small>
+        <small class="form-text text-muted">For accurate results please add one Skill per time!</small>
         <br>
-
-
         I am searching for a skilled candidate having
-
         <div class="row">
             <div class="col-12">
                 <div class="d-flex align-content-start flex-wrap">
@@ -57,8 +53,21 @@
         </div>
 
         <div class="modal-footer">
-            <button type="submit" class="btn btn-outline-success">Save</button>
-            <button type="button" class="btn btn-outline-dark">Dismiss</button>
+            <button type="submit" class="btn btn-outline-success">
+                <i class="bi bi-search"></i>
+                Search
+            </button>
+            <button type="button" class="btn btn-outline-danger" (click)="clear()">Clear</button>
         </div>
     </form>
+
+    <div class="row" *ngIf="loaded">
+        <div class="p-2 col-lg-4 col-md-6 col-sm-6" *ngFor="let c of candidateResults;">
+            <div class="card p-3 m-2">
+                <div><a [routerLink]="['/profile/'+c?.entityId]">{{c?.name}}</a>
+                </div>
+                <div>Email: {{c?.email}}</div>
+            </div>
+        </div>
+    </div>
 </div>

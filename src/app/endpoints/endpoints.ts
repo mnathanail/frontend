@@ -44,5 +44,6 @@ export class Endpoints {
     static GET_RECRUITER_BY_JOB_ID = 'http://localhost:8080/controller/get/recruiter';
 
     static CANDIDATE_SEARCH_JOB_BY_KEYWORDS = 'http://localhost:8080/controller/candidate/search/job/keywords';
+    static RECRUITER_SEARCH_CANDIDATE_BY_SKILLS = 'http://localhost:8080/controller/recruiter/search/candidate/keywords';
 
 }
