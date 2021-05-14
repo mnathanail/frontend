@@ -9,6 +9,10 @@ span.dontHave {
     color: #138496;
 }
 
+.cursor{
+    cursor: pointer;
+}
+
 .border-5{
     border: 5px solid #dee2e6 !important;
 }
