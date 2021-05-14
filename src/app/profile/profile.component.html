@@ -29,7 +29,7 @@
                             <div class="col-xl-4 col-md-4 d-flex justify-content-center">
                                 <div class="image-default">
                                     <img class="rounded-circle img-fluid img-thumbnail"
-                                         *ngIf="loaded && results?.image;
+                                         *ngIf="loaded && (results?.image || profilePic);
                                          else emptyImage;"
                                          [src]="profilePic">
                                     <ng-template #emptyImage>
@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="infos">
                                     <h2>{{results?.name}} {{results?.surname}}</h2>
-                                    <span *ngIf="isRecruiter">(Recruiter)</span>
+                                    <span *ngIf="isRecruiter && isOwner">(Recruiter)</span>
                                 </div>
                             </div>
                             <div *ngIf="isOwner"

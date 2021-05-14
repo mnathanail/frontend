@@ -78,6 +78,10 @@ export class JobViewComponent implements OnInit, OnDestroy {
         }
     }
 
+    refreshRecommendationList(): void{
+        this.getRecommendationForJob();
+    }
+
     applyForJob(jobId: string): void {
         const candidateId = this.user.id.toString();
 
@@ -137,7 +141,7 @@ export class JobViewComponent implements OnInit, OnDestroy {
                 }))
             .subscribe(
                 (value) => {
-                    this.recommendationForJob = value;
+                    this.recommendationForJob = value.sort((a, b) => (a.percent > b.percent) ? -1 : 1);
                     this.jobRequires = value[0]?.totalSkillNames;
                 }
             );
@@ -151,12 +155,13 @@ export class JobViewComponent implements OnInit, OnDestroy {
                         e.dontHave = e.totalSkillNames.filter(a => !e.haveSkillNames.includes(a));
                         return e;
                     });
+                    console.log(items);
                     return items;
                 }))
             .subscribe(
                 (value) => {
                     console.log(value);
-                    this.appliedWithReccomendationForJob = value;
+                    this.appliedWithReccomendationForJob = value.sort((a, b) => (a.percent > b.percent) ? -1 : 1);
                 }
             );
     }

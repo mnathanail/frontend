@@ -1,3 +1,13 @@
 .list-item-height{
     height: 135px;
 }
+
+.fade-description-list:after{
+    background: linear-gradient(0deg,#fff,rgba(255,255,255,0) 100%);
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 70px;
+    width: 100%;
+}

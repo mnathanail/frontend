@@ -1,15 +1,22 @@
+<div class="row p-3" *ngIf="loaded">
+    [{{keywords }}]
+</div>
+<div class="row pl-3" *ngIf="loaded && jobModel.length>0; else nothingFound;">
+    <ngb-pagination
+        [pageSize]="page.pageSize"
+        [collectionSize]="collectionSize"
+        [(page)]="thePageNumber"
+        (pageChange)="updatePage()">
+    </ngb-pagination>
+</div>
 <div class="row" *ngIf="loaded && jobModel.length>0; else nothingFound;">
     <div class="col-4">
         <div class="list-group">
-            <a class="list-group-item list-group-item-action flex-column align-items-start list-item-height"
+            <a #job_list_item class="list-group-item list-group-item-action flex-column
+             align-items-start list-item-height overflow-hidden "
                [class.active]=" selectedItem === job"
+               [ngClass]="job_list_item.classList.contains('active')  ? '' : 'fade-description-list'"
                *ngFor="let job of jobModel; let i = index;" (click)="selected(job);">
-                <!--<div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small>3 days ago</small>
-                </div>
-                <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                <small>Donec id elit non mi porta.</small>-->
                 <h4>{{job.jobTitle}}</h4>
                 <div [innerHTML]="job?.description"></div>
             </a>
@@ -21,12 +28,6 @@
     </div>
 
     <br>
-    <ngb-pagination
-        [pageSize]="page.pageSize"
-        [collectionSize]="collectionSize"
-        [(page)]="thePageNumber"
-        (pageChange)="updatePage()">
-    </ngb-pagination>
 </div>
 
 <ng-template #nothingFound>

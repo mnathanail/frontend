@@ -10,8 +10,8 @@
         <div class="col-12 pl-0">
             <h3>
                 <span class="mr-2">{{jobValue?.jobTitle}}</span>
-                <span [ngbTooltip]="'Update Job'" *ngIf="isRecruiter && ownsJob" (click)="updateJob(jobValue?.jobId)">
-                    <i class="bi bi-arrow-repeat refresh-color"></i>
+                <span [ngbTooltip]="'Edit Job'" *ngIf="isRecruiter && ownsJob" (click)="updateJob(jobValue?.jobId)">
+                    <i class="bi bi-pencil-square refresh-color"></i>
                 </span>
                 <span [ngbTooltip]="'Delete Job'" *ngIf="isRecruiter && ownsJob" (click)="deleteJob(jobValue?.jobId)">
                     <i class="bi bi-trash trash-color"></i>
@@ -62,7 +62,11 @@
     <div class="row">
         <div class="col-12 pl-4">
             <h3>Show Candidates applied</h3>
-
+            <div class="row" *ngIf="appliedWithReccomendationForJob?.length === 0">
+                <div class="p-3 col-lg-12 col-md-6 col-sm-6">
+                    None has applied yet but don't loose your faith! :)
+                </div>
+            </div>
             <div class="row">
                 <div class="p-2 col-lg-4 col-md-6 col-sm-6" *ngFor="let awrfj of appliedWithReccomendationForJob;">
                     <div class="card p-3 m-2">
@@ -70,7 +74,7 @@
                         </div>
                         <div>Candidate has: {{awrfj?.haveSkillNames}} ({{awrfj?.candidateSkillNumber}})</div>
                         <div>Candidate has not: {{awrfj?.dontHave}} ({{awrfj.dontHave?.length}})</div>
-                        <div>Matching percentage: {{awrfj?.percent * 100 }}%</div>
+                        <div>Matching percentage: {{awrfj?.percent | percent }}</div>
                     </div>
                 </div>
             </div>
@@ -79,7 +83,7 @@
     <div class="row">
         <div class="col-12 pl-4">
             <h3 class="text-decoration-line-through">Show Recommendations
-                <span>
+                <span ngbTooltip="Refresh List" (click)="refreshRecommendationList()">
                     <i class="bi bi-arrow-repeat refresh-color"></i>
                 </span>
             </h3>
@@ -88,11 +92,24 @@
             <div class="row">
                 <div class="p-2 col-lg-4 col-md-6 col-sm-6" *ngFor="let rfj of recommendationForJob;">
                     <div class="card p-3 m-2">
-                        <div><a [routerLink]="['/profile/'+rfj?.candidateEntityId]">{{rfj?.candidateName}}</a>
+                        <div class="row">
+                            <div class="col-9">
+                                <a [routerLink]="['/profile/'+rfj?.candidateEntityId]">{{rfj?.candidateName}}</a>
+                            </div>
+                            <div class="col-3">
+                                <span class="ml-4" *ngIf="rfj?.percent >= 0.29 && rfj?.percent < 0.84">
+                                    <i class="bi bi-hand-thumbs-up text-success"></i>
+                                </span>
+                                <span *ngIf="rfj?.percent >= 0.85">
+                                    <i class="bi bi-star-fill bi--sm text-success"></i>
+                                    <i class="bi bi-star-fill bi--sm text-success"></i>
+                                    <i class="bi bi-star-fill bi--sm text-success"></i>
+                                </span>
+                            </div>
                         </div>
                         <div>Candidate has: {{rfj?.haveSkillNames}} ({{rfj?.candidateSkillNumber}})</div>
                         <div>Candidate has not: {{rfj?.dontHave}} ({{rfj.dontHave?.length}})</div>
-                        <div>Matching percentage: {{rfj?.percent * 100 }}%</div>
+                        <div>Matching percentage: {{rfj?.percent  | percent }}</div>
                     </div>
                 </div>
             </div>

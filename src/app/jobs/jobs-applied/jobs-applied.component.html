@@ -1,4 +1,4 @@
-<div *ngIf="loaded && jobList.length>0">
+<!--<div *ngIf="loaded && jobList.length>0">
     <ul class="list-group">
         <li class="list-group-item" *ngFor="let item of jobList">
             <div class="d-flex w-100 justify-content-between">
@@ -14,6 +14,22 @@
             <div class="text-truncate">{{item.description}}</div>
             <br>
             <div>{{item.jobId}}</div>
+        </li>
+    </ul>
+</div>-->
+<div *ngIf="loaded && jobList.length>0">
+    <ul class="list-group">
+        <li class="list-group-item list-item-height overflow-hidden mb-3 border-top" *ngFor="let item of jobList">
+            <div class="d-flex w-100 justify-content-between">
+                <h3 class="mb-1"><a [routerLink]="['../job-view/'+item.jobId]">
+                    {{item.jobTitle}}
+                </a></h3>
+                <small class="pt-2" (click)="undoApply(item.jobId)">
+                    <i class="bi bi-trash bi--xl text-danger"></i>
+                </small>
+            </div>
+            <div class="text-truncate fade-description-list" [innerHTML]="item?.description"></div>
+            <br>
         </li>
     </ul>
 </div>

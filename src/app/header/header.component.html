@@ -35,7 +35,7 @@
                                [resultFormatter]="formatMatches">
                     </div>
                 </li>
-                <li class="nav-item active" *ngIf="loaded && isLoggedIn">
+                <li class="nav-item active" *ngIf="loaded && isLoggedIn && !isRecruiter">
                     <a class="nav-link" [routerLink]="['jobs']">Jobs <span class="sr-only">(current)</span></a>
                 </li>
 

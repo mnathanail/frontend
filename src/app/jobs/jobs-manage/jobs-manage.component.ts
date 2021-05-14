@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {JobModel} from '../job-model';
 import {Subject} from 'rxjs';
 import {TokenStorageService} from '../../shared/service/token-storage.service';
@@ -11,7 +11,7 @@ import {takeUntil} from 'rxjs/operators';
     templateUrl: './jobs-manage.component.html',
     styleUrls: ['./jobs-manage.component.css']
 })
-export class JobsManageComponent implements OnInit {
+export class JobsManageComponent implements OnInit, OnDestroy {
 
     profileId: string;
     jobList: JobModel[];
@@ -43,5 +43,10 @@ export class JobsManageComponent implements OnInit {
                 error => console.log(error),
                 () => {}
             );
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.unsubscribe();
     }
 }

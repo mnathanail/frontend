@@ -18,7 +18,6 @@ export class JobService {
         const url = Endpoints.JOB_SAVE;
         const params = new HttpParams()
             .set('recruiterId', recruiterId);
-
         return this.http.post<JobModel>(url, jobModel, {params});
     }
 

@@ -27,6 +27,7 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
     thePageNumber = 1;
     userId: string;
     isRecruiter = false;
+    keywords: any;
     private destroy$ = new Subject<any>();
 
     constructor(private jobService: JobService,
@@ -54,6 +55,11 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                     .pipe(takeUntil(this.destroy$))
                     .subscribe(
                         (val) => {
+                            if (typeof params.keywords === 'string') {
+                                this.keywords = params.keywords;
+                            } else {
+                                this.keywords = params.keywords.join(' - ');
+                            }
                             this.jobModel = val.content;
                             this.loaded = true;
                             this.selectedJob = val.content[0];
@@ -64,7 +70,8 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                         error => {
                             console.log(error);
                         },
-                        () => {}
+                        () => {
+                        }
                     );
             });
     }
@@ -99,7 +106,8 @@ export class JobSearchListComponent implements OnInit, OnDestroy {
                 error => {
                     console.log('error');
                 },
-                () => {}
+                () => {
+                }
             );
     }
 
